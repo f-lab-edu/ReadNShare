@@ -16,9 +16,9 @@ public class ApiExceptionAdvice {
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
-    @ExceptionHandler(DuplicateEmailException.class)
-    public ResponseEntity duplicateEmailExceptionHandler(DuplicateEmailException ex){
-        ErrorResponse response = new ErrorResponse(ErrorCode.EMAIL_DUPLICATION);
+    @ExceptionHandler(MemberException.class)
+    public ResponseEntity memberExceptionHandler(MemberException ex){
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
     }
 
