@@ -11,4 +11,10 @@ public class MemberException extends RuntimeException {
         this.errorCode = errorCode;
     }
 
+    public static class DuplicateEmailException extends MemberException {
+        public DuplicateEmailException() {
+            super(ErrorCode.EMAIL_DUPLICATION);
+        }
+    }
+
 }

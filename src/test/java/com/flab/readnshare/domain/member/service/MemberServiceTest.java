@@ -3,7 +3,7 @@ package com.flab.readnshare.domain.member.service;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.member.dto.SignUpRequestDto;
 import com.flab.readnshare.domain.member.repository.MemberRepository;
-import com.flab.readnshare.global.common.exception.DuplicateEmailException;
+import com.flab.readnshare.global.common.exception.MemberException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -55,7 +55,7 @@ class MemberServiceTest {
     }
 
     @Test
-    @DisplayName("중복 이메일로 회원가입 시 DuplicateEmailException가 발생한다")
+    @DisplayName("중복 이메일로 회원가입 시 DuplicateEmailException이 발생한다")
     void signup_fail_duplicate_email(){
         // given
         SignUpRequestDto request = SignUpRequestDto.builder()
@@ -73,6 +73,6 @@ class MemberServiceTest {
                         .build()));
 
         // then
-        assertThrows(DuplicateEmailException.class, () -> memberService.signUp(request),"이메일이 중복되어 회원가입에 실패해야 합니다.");
+        assertThrows(MemberException.DuplicateEmailException.class, () -> memberService.signUp(request),"이메일이 중복되어 회원가입에 실패해야 합니다.");
     }
 }

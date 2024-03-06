@@ -4,7 +4,6 @@ import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.member.dto.SignUpRequestDto;
 import com.flab.readnshare.domain.member.repository.MemberRepository;
 import com.flab.readnshare.global.common.exception.MemberException;
-import com.flab.readnshare.global.common.exception.ErrorCode;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +25,7 @@ public class MemberService {
 
     private void validateDuplicateMember(String email){
         memberRepository.findByEmail(email).ifPresent(m -> {
-            throw new MemberException(ErrorCode.EMAIL_DUPLICATION);
+            throw new MemberException.DuplicateEmailException();
         });
     }
 
