@@ -25,9 +25,9 @@ public class MemberService {
     }
 
     private void validateDuplicateMember(String email){
-        if (memberRepository.findByEmail(email).isPresent()){
-            throw new DuplicateEmailException(ErrorCode.EMAIL_DUPLICATION);
-        }
+        memberRepository.findByEmail(email).ifPresent(m -> {
+            throw new DuplicateEmailException();
+        });
     }
 
 }
