@@ -64,13 +64,8 @@ class MemberServiceTest {
                 .nickName("test")
                 .build();
 
-        // 중복 이메일을 가진 회원이 이미 존재한다고 가정
-        when(memberRepository.findByEmail(request.getEmail()))
-                .thenReturn(Optional.of(Member.builder()
-                        .email(request.getEmail())
-                        .password(request.getPassword())
-                        .nickName(request.getNickName())
-                        .build()));
+        Optional<Member> m = Optional.of(mock(Member.class));
+        when(memberRepository.findByEmail(request.getEmail())).thenReturn(m);
 
         // then
         assertThrows(MemberException.DuplicateEmailException.class, () -> memberService.signUp(request),"이메일이 중복되어 회원가입에 실패해야 합니다.");
