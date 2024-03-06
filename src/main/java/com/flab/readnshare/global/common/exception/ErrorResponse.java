@@ -2,7 +2,6 @@ package com.flab.readnshare.global.common.exception;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
 import lombok.*;
-import org.springframework.http.HttpStatus;
 import org.springframework.validation.BindException;
 import org.springframework.validation.FieldError;
 
@@ -13,7 +12,6 @@ import java.util.stream.Collectors;
 public class ErrorResponse {
 
     private String code;
-    private HttpStatus status;
     private String message;
 
     @JsonInclude(JsonInclude.Include.NON_EMPTY)
@@ -35,8 +33,7 @@ public class ErrorResponse {
 
     public ErrorResponse(ErrorCode errorCode){
        this.code = errorCode.toString();
-        this.status = errorCode.getStatus();
-        this.message = errorCode.getMessage();
+       this.message = errorCode.getMessage();
     }
 
     public ErrorResponse(BindException ex, ErrorCode errorCode){
@@ -47,7 +44,6 @@ public class ErrorResponse {
                 .collect(Collectors.toList());
 
         this.code = errorCode.toString();
-        this.status = errorCode.getStatus();
         this.message = errorCode.getMessage();
         this.errors = validationErrorList;
     }

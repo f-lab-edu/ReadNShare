@@ -19,7 +19,7 @@ public class ApiExceptionAdvice {
     @ExceptionHandler(MemberException.class)
     public ResponseEntity memberExceptionHandler(MemberException ex){
         ErrorResponse response = new ErrorResponse(ex.getErrorCode());
-        return new ResponseEntity<>(response, HttpStatus.BAD_REQUEST);
+        return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
     }
 
 }
