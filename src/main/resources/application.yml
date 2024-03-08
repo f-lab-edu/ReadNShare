@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    active: local
+
   datasource:
     url: jdbc:h2:mem:test
 #    url: jdbc:h2:tcp://localhost/~/jpashop
@@ -13,6 +16,12 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+
+  data:
+    redis:
+      host: localhost
+      port: 6379
+
 
 logging:
   level:
