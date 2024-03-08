@@ -4,15 +4,17 @@ import com.flab.readnshare.domain.auth.dto.SignInRequestDto;
 import com.flab.readnshare.domain.auth.service.AuthService;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.member.dto.MemberResponseDto;
+import com.flab.readnshare.global.common.auth.jwt.JwtUtil;
+import com.flab.readnshare.global.common.exception.AuthException;
+import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 @Slf4j
@@ -21,6 +23,7 @@ import org.springframework.web.bind.annotation.RestController;
 public class AuthApiController {
 
     private final AuthService authService;
+    private final JwtUtil jwtUtil;
 
     @PostMapping("/signIn")
     public ResponseEntity<MemberResponseDto> signIn(@RequestBody SignInRequestDto dto, HttpServletResponse response){
@@ -38,6 +41,34 @@ public class AuthApiController {
         authService.sendRefreshToken(response, member.getId());
 
         return new ResponseEntity<>(responseDto, HttpStatus.OK);
+    }
+
+    @PostMapping("/refresh")
+    public ResponseEntity refresh(@CookieValue(value = "refreshToken") Cookie cookie, HttpServletResponse response ){
+        String refreshToken = Optional.ofNullable(cookie)
+                .map(Cookie::getValue)
+                .orElseThrow(AuthException.NullTokenException::new);
+
+        String memberId = Optional.ofNullable(refreshToken)
+                .map(jwtUtil::extractMemberId)
+                .orElseThrow(AuthException.DeniedTokenException::new);
+
+        switch (jwtUtil.validateToken(refreshToken)){
+            case DENIED -> {
+                throw new AuthException.DeniedTokenException();
+            }
+            case EXPIRED -> {
+                throw new AuthException.ExpiredTokenException();
+            }
+            case ACCESS -> {
+                authService.validateTokenFromRedis(refreshToken);
+                authService.sendAccessToken(response, Long.valueOf(memberId));
+
+                return new ResponseEntity(HttpStatus.OK);
+            }
+        }
+
+        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
     }
 
 }

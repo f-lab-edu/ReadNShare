@@ -1,6 +1,7 @@
 package com.flab.readnshare.domain.auth.service;
 
 import com.flab.readnshare.domain.auth.dto.SignInRequestDto;
+import com.flab.readnshare.domain.auth.repository.RefreshTokenRepository;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.member.repository.MemberRepository;
 import com.flab.readnshare.global.common.auth.jwt.JwtUtil;
@@ -16,6 +17,7 @@ import org.springframework.transaction.annotation.Transactional;
 @RequiredArgsConstructor
 public class AuthService {
     private final MemberRepository memberRepository;
+    private final RefreshTokenRepository refreshTokenRepository;
     private final JwtUtil jwtUtil;
 
     /**
@@ -38,6 +40,10 @@ public class AuthService {
     public void sendRefreshToken(HttpServletResponse response, Long memberId){
         String refreshToken = jwtUtil.createRefreshToken(memberId);
         jwtUtil.setRefreshTokenCookie(response, refreshToken);
+    }
+
+    public void validateTokenFromRedis (String refreshToken){
+        refreshTokenRepository.findById(refreshToken).orElseThrow(AuthException.ExpiredTokenException::new);
     }
 
 }
