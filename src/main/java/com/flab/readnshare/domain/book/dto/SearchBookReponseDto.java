@@ -10,11 +10,11 @@ public class SearchBookReponseDto {
     public Integer total;
     List<Items> items = new ArrayList<>();
 
-    static class Items {
-        public String title;
-        public String image;
-        public String author;
-        public String isbn;
-        public String description;
+    final static class Items {
+        private String title;
+        private String image;
+        private String author;
+        private String isbn;
+        private String description;
     }
 }
