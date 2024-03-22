@@ -18,8 +18,3 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
-
-naver:
-  book:
-    id: kjptqrY8qncYpDeDq5bi
-    secret: QOWJ9yh0SO
