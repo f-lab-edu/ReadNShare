@@ -28,12 +28,13 @@ public class BookService {
     private final String SEARCH_BOOK_URL = "https://openapi.naver.com/v1/search/book.json?display=10";
     private final String SEARCH_BOOK_DETAIL_URL = "https://openapi.naver.com/v1/search/book_adv.json";
 
+    private final RestTemplate restTemplate;
+
     /**
      * 책 검색
     * */
     public SearchBookReponseDto searchBook(String keyword, int start){
         HttpEntity<String> httpEntity = getHttpEntitiy();
-        RestTemplate restTemplate = new RestTemplate();
 
         URI targetUrl = UriComponentsBuilder
                 .fromUriString(SEARCH_BOOK_URL)
@@ -51,7 +52,6 @@ public class BookService {
      * */
     public SearchBookDetailReponseDto searchBookDetail(String isbn){
         HttpEntity<String> httpEntity = getHttpEntitiy();
-        RestTemplate restTemplate = new RestTemplate();
 
         URI targetUrl = UriComponentsBuilder
                 .fromUriString(SEARCH_BOOK_DETAIL_URL)
