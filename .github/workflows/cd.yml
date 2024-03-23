@@ -39,17 +39,13 @@ jobs:
 
       - name: Deploy Images with Docker compose
         uses: appleboy/ssh-action@master
-        env:
-          APP: "readnshare"
-          COMPOSE: "/home/compose/docker-compose.yml"
         with:
-          username: ${{ secrets.SERVER_USERNAME }}
           host: ${{ secrets.SERVER_HOST }}
+          username: ${{ secrets.SERVER_USERNAME }}
           password: ${{ secrets.SERVER_PASSWORD }}
-          port: ${{ secrets.SERVER_PORT }}
-          envs: APP, COMPOSE
           script_stop: true
           script: |
-            sudo docker-compose -f $COMPOSE down
+            sudo docker stop $(docker ps -a -q)
+            sudo docker rm $(docker ps -a -q)
             sudo docker pull ${{ secrets.DOCKER_USERNAME }}/readnshare
-            sudo docker-compose -f $COMPOSE up -d
+            sudo docker run -d -p 8080:8080 ${{ secrets.DOCKER_USERNAME }}/readnshare
