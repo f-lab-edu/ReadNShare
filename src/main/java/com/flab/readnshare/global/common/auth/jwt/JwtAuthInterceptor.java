@@ -17,13 +17,15 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
     public boolean preHandle(HttpServletRequest request, HttpServletResponse response, Object handler) throws Exception {
         String accessToken = jwtUtil.extractAccessToken(request);
 
-        if (accessToken != null){
-            switch (jwtUtil.validateToken(accessToken)){
+        if (accessToken != null) {
+            switch (jwtUtil.validateToken(accessToken)) {
                 case DENIED -> throw new AuthException.DeniedTokenException();
                 case EXPIRED -> throw new AuthException.ExpiredTokenException();
-                case ACCESS -> {return true;}
+                case ACCESS -> {
+                    return true;
+                }
             }
-        }else {
+        } else {
             throw new AuthException.NullTokenException();
         }
 
