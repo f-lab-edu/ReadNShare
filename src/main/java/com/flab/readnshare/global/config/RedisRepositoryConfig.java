@@ -22,7 +22,7 @@ public class RedisRepositoryConfig {
     }
 
     @Bean
-    public RedisTemplate<?, ?> redisTemplate(LettuceConnectionFactory connectionFactory){
+    public RedisTemplate<byte[], byte[]> redisTemplate(LettuceConnectionFactory connectionFactory){
         RedisTemplate<byte[], byte[]> template = new RedisTemplate<>();
         template.setConnectionFactory(connectionFactory);
         return template;
