@@ -1,5 +1,6 @@
 package com.flab.readnshare.domain.auth.controller;
 
+import com.flab.readnshare.AuthTestFixture;
 import com.flab.readnshare.domain.auth.dto.SignInRequestDto;
 import com.flab.readnshare.domain.auth.repository.RefreshTokenRepository;
 import com.flab.readnshare.domain.auth.service.AuthService;
@@ -60,15 +61,12 @@ class AuthApiControllerTest {
     @DisplayName("로그인에 성공한다.")
     void signin_success() throws Exception {
         // given
-        SignInRequestDto request = SignInRequestDto.builder()
-                .email("test@naver.com")
-                .password("test24680!")
-                .build();
+        SignInRequestDto request = AuthTestFixture.getSignInRequestDto();
 
         given(authService.signIn(any(SignInRequestDto.class)))
                 .willReturn(MemberResponseDto.builder()
                         .id(1L)
-                        .email("test@naver.com")
+                        .email(request.getEmail())
                         .nickName("test")
                         .build().toEntity());
 
@@ -88,10 +86,7 @@ class AuthApiControllerTest {
     @DisplayName("로그인에 실패한다.(존재하지 않는 회원)")
     void signin_fail_email() throws Exception {
         // given
-        SignInRequestDto request = SignInRequestDto.builder()
-                .email("test@naver.com")
-                .password("test24680!")
-                .build();
+        SignInRequestDto request = AuthTestFixture.getSignInRequestDto();
 
         when(authService.signIn(any(SignInRequestDto.class)))
                 .thenThrow(new MemberException.MemberNotFoundException());
@@ -111,10 +106,7 @@ class AuthApiControllerTest {
     @DisplayName("로그인에 실패한다.(비밀번호 불일치)")
     void signin_fail_password() throws Exception {
         // given
-        SignInRequestDto request = SignInRequestDto.builder()
-                .email("test@naver.com")
-                .password("test24680!")
-                .build();
+        SignInRequestDto request = AuthTestFixture.getSignInRequestDto();
 
         when(authService.signIn(any(SignInRequestDto.class)))
                 .thenThrow(new AuthException.InvalidPasswordException());

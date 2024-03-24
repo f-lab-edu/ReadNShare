@@ -1,5 +1,6 @@
 package com.flab.readnshare.domain.auth.service;
 
+import com.flab.readnshare.AuthTestFixture;
 import com.flab.readnshare.domain.auth.dto.SignInRequestDto;
 import com.flab.readnshare.domain.auth.repository.RefreshTokenRepository;
 import com.flab.readnshare.domain.member.domain.Member;
@@ -31,10 +32,7 @@ class AuthServiceTest {
     @DisplayName("로그인을 하면 member를 리턴한다")
     void signIn_success_return_member() {
         // given
-        SignInRequestDto request = SignInRequestDto.builder()
-                .email("test@naver.com")
-                .password("test24680!")
-                .build();
+        SignInRequestDto request = AuthTestFixture.getSignInRequestDto();
 
         Member expectedMember = Member.builder()
                 .email(request.getEmail())
@@ -55,10 +53,7 @@ class AuthServiceTest {
     @DisplayName("비밀번호 불일치 시 InvalidPasswordException이 발생한다")
     void signIn_fail_password() {
         // given
-        SignInRequestDto request = SignInRequestDto.builder()
-                .email("test@naver.com")
-                .password("test24680!")
-                .build();
+        SignInRequestDto request = AuthTestFixture.getSignInRequestDto();
 
         Member expectedMember = Member.builder()
                 .email(request.getEmail())
