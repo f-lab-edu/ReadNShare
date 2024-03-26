@@ -11,7 +11,8 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebMvcConfig implements WebMvcConfigurer {
     private final JwtAuthInterceptor jwtAuthInterceptor;
 
-    public void addInterceptors(InterceptorRegistry registry){
+    @Override
+    public void addInterceptors(InterceptorRegistry registry) {
         registry.addInterceptor(jwtAuthInterceptor)
                 .addPathPatterns("/**")
                 .excludePathPatterns("/signUp")
