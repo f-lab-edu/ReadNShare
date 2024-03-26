@@ -17,4 +17,11 @@ public class MemberException extends RuntimeException {
         }
     }
 
+    public static class MemberNotFoundException extends MemberException {
+        public MemberNotFoundException() {
+            super(ErrorCode.MEMBER_NOT_FOUND);
+        }
+    }
+
+
 }

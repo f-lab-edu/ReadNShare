@@ -1,4 +1,7 @@
 spring:
+  profiles:
+    active: local
+
   datasource:
     url: jdbc:h2:mem:test
     username: sa
@@ -12,6 +15,19 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+
+  data:
+    redis:
+      host: ${DATA_REDIS_HOST:localhost}
+      port: 6379
+
+jwt:
+  access:
+    expiration: 1800000 #30분
+
+  refresh:
+    expiration: 1209600000 #2주
+
 
 logging:
   level:
