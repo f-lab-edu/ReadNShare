@@ -22,4 +22,10 @@ public class ApiExceptionAdvice {
         return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
     }
 
+    @ExceptionHandler(AuthException.class)
+    public ResponseEntity authExceptionHandler(AuthException ex){
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
+    }
+
 }
