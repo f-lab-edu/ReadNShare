@@ -26,24 +26,26 @@ public class AuthService {
     public Member signIn(SignInRequestDto dto) {
         Member member = memberRepository.findByEmail(dto.getEmail()).orElseThrow(MemberException.MemberNotFoundException::new);
 
-        if (member.getPassword().equals(dto.getPassword())){
+        if (member.getPassword().equals(dto.getPassword())) {
             return member;
         }
         throw new AuthException.InvalidPasswordException();
     }
 
-    public void sendAccessToken(HttpServletResponse response, Long memberId){
+    public void sendAccessToken(HttpServletResponse response, Long memberId) {
         String accessToken = jwtUtil.createAccessToken(memberId);
         jwtUtil.setAccessTokenHeader(response, accessToken);
     }
 
-    public void sendRefreshToken(HttpServletResponse response, Long memberId){
+    public void sendRefreshToken(HttpServletResponse response, Long memberId) {
         String refreshToken = jwtUtil.createRefreshToken(memberId);
         jwtUtil.setRefreshTokenCookie(response, refreshToken);
     }
 
-    public void validateTokenFromRedis (String refreshToken){
-        refreshTokenRepository.findById(refreshToken).orElseThrow(AuthException.ExpiredTokenException::new);
+    public void validateTokenFromRedis(String refreshToken) {
+        if (refreshTokenRepository.findById(refreshToken).isEmpty()) {
+            throw new AuthException.ExpiredTokenException();
+        }
     }
 
 }
