@@ -43,6 +43,7 @@ dependencies {
 	annotationProcessor 'org.projectlombok:lombok'
 	testImplementation 'org.springframework.boot:spring-boot-starter-test'
 
+	implementation 'org.springframework.retry:spring-retry'
 	testFixturesImplementation ('com.github.javafaker:javafaker:1.0.2') { exclude module: 'snakeyaml' }
 	testFixturesImplementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
 }
