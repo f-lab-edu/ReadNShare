@@ -57,7 +57,7 @@ public class JwtUtil {
 
         // Redis에 저장
         RefreshToken redisRefreshToken = RefreshToken.builder()
-                .refreshToken(refreshToken)
+                .refreshTokenValue(refreshToken)
                 .memberId(memberId)
                 .expiration(refreshTokenValidTime)
                 .build();
