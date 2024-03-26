@@ -12,15 +12,15 @@ import java.util.concurrent.TimeUnit;
 @Getter
 public class RefreshToken {
     @Id
-    private String refreshToken;
+    private String refreshTokenValue;
     private Long memberId;
 
     @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private Long expiration;
 
     @Builder
-    public RefreshToken(String refreshToken, Long memberId, Long expiration) {
-        this.refreshToken = refreshToken;
+    public RefreshToken(String refreshTokenValue, Long memberId, Long expiration) {
+        this.refreshTokenValue = refreshTokenValue;
         this.memberId = memberId;
         this.expiration = expiration;
     }
