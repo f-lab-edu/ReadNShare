@@ -26,7 +26,7 @@ public class AuthApiController {
     private final JwtUtil jwtUtil;
 
     @PostMapping("/signIn")
-    public ResponseEntity<MemberResponseDto> signIn(@RequestBody SignInRequestDto dto, HttpServletResponse response){
+    public ResponseEntity<MemberResponseDto> signIn(@RequestBody SignInRequestDto dto, HttpServletResponse response) {
         Member member = authService.signIn(dto);
 
         MemberResponseDto responseDto = MemberResponseDto.builder()
@@ -44,7 +44,7 @@ public class AuthApiController {
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity refresh(@CookieValue(value = "refreshToken") Cookie cookie, HttpServletResponse response ){
+    public ResponseEntity<Void> refresh(@CookieValue(value = "refreshToken") Cookie cookie, HttpServletResponse response) {
         String refreshToken = Optional.ofNullable(cookie)
                 .map(Cookie::getValue)
                 .orElseThrow(AuthException.NullTokenException::new);
@@ -53,7 +53,7 @@ public class AuthApiController {
                 .map(jwtUtil::extractMemberId)
                 .orElseThrow(AuthException.DeniedTokenException::new);
 
-        switch (jwtUtil.validateToken(refreshToken)){
+        switch (jwtUtil.validateToken(refreshToken)) {
             case DENIED -> {
                 throw new AuthException.DeniedTokenException();
             }
@@ -64,11 +64,11 @@ public class AuthApiController {
                 authService.validateTokenFromRedis(refreshToken);
                 authService.sendAccessToken(response, Long.valueOf(memberId));
 
-                return new ResponseEntity(HttpStatus.OK);
+                return new ResponseEntity<>(HttpStatus.OK);
             }
         }
 
-        return new ResponseEntity(HttpStatus.UNAUTHORIZED);
+        return new ResponseEntity<>(HttpStatus.UNAUTHORIZED);
     }
 
 }
