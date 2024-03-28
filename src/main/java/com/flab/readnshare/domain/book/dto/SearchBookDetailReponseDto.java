@@ -9,6 +9,7 @@ import java.util.List;
 public class SearchBookDetailReponseDto {
     List<Items> items = new ArrayList<>();
 
+    @Getter
     final static class Items {
         private String title;
         private String image;
