@@ -17,13 +17,19 @@ public class ApiExceptionAdvice {
     }
 
     @ExceptionHandler(MemberException.class)
-    public ResponseEntity memberExceptionHandler(MemberException ex){
+    public ResponseEntity memberExceptionHandler(MemberException ex) {
         ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
     }
 
     @ExceptionHandler(AuthException.class)
-    public ResponseEntity authExceptionHandler(AuthException ex){
+    public ResponseEntity authExceptionHandler(AuthException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
+    }
+
+    @ExceptionHandler(ReviewException.class)
+    public ResponseEntity reviewExceptionHandler(ReviewException ex) {
         ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
     }

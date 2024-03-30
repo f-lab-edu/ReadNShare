@@ -15,10 +15,14 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다."),
 
     // Auth
-    JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다." ),
+    JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
     JWT_DENIED(HttpStatus.UNAUTHORIZED, "조작되거나 지원되지 않는 토큰입니다."),
     JWT_NULL(HttpStatus.UNAUTHORIZED, "토큰이 없습니다."),
-    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다.");
+    INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
+
+    // Review
+    REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 독서 기록 입니다."),
+    REVIEW_FORBIDDEN_MEMBER(HttpStatus.FORBIDDEN, "해당 독서 기록에 대한 수정 및 삭제 권한이 없습니다.");
 
     private final HttpStatus status;
     private final String message;
