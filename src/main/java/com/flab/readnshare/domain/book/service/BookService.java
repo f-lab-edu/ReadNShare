@@ -1,7 +1,10 @@
 package com.flab.readnshare.domain.book.service;
 
+import com.flab.readnshare.domain.book.domain.Book;
+import com.flab.readnshare.domain.book.dto.BookDto;
 import com.flab.readnshare.domain.book.dto.SearchBookDetailReponseDto;
 import com.flab.readnshare.domain.book.dto.SearchBookReponseDto;
+import com.flab.readnshare.domain.book.repository.BookRepository;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpEntity;
@@ -29,11 +32,12 @@ public class BookService {
     private final String SEARCH_BOOK_DETAIL_URL = "https://openapi.naver.com/v1/search/book_adv.json";
 
     private final RestTemplate restTemplate;
+    private final BookRepository bookRepository;
 
     /**
      * 책 검색
-    * */
-    public SearchBookReponseDto searchBook(String keyword, int start){
+     */
+    public SearchBookReponseDto searchBook(String keyword, int start) {
         HttpEntity<String> httpEntity = getHttpEntitiy();
 
         URI targetUrl = UriComponentsBuilder
@@ -49,8 +53,8 @@ public class BookService {
 
     /**
      * 책 상세 검색
-     * */
-    public SearchBookDetailReponseDto searchBookDetail(String isbn){
+     */
+    public SearchBookDetailReponseDto searchBookDetail(String isbn) {
         HttpEntity<String> httpEntity = getHttpEntitiy();
 
         URI targetUrl = UriComponentsBuilder
@@ -69,6 +73,15 @@ public class BookService {
         httpHeaders.set("X-Naver-Client-Id", clientId);
         httpHeaders.set("X-Naver-Client-Secret", clientSecret);
         return new HttpEntity<>(httpHeaders);
+    }
+
+    /**
+     * 책 등록
+     */
+    public Book save(BookDto dto) {
+        Book book = bookRepository.findByIsbn(dto.getIsbn())
+                .orElseGet(() -> bookRepository.save(dto.toEntity()));
+        return book;
     }
 
 }
