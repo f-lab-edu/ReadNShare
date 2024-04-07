@@ -22,7 +22,11 @@ public enum ErrorCode {
 
     // Review
     REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 독서 기록 입니다."),
-    REVIEW_FORBIDDEN_MEMBER(HttpStatus.FORBIDDEN, "해당 독서 기록에 대한 수정 및 삭제 권한이 없습니다.");
+    REVIEW_FORBIDDEN_MEMBER(HttpStatus.FORBIDDEN, "해당 독서 기록에 대한 수정 및 삭제 권한이 없습니다."),
+
+    // Follow
+    SELF_FOLLOW(HttpStatus.BAD_REQUEST, "자기 자신을 팔로우 할 수 없습니다."),
+    FOLLOW_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 해당 사용자를 팔로우하고 있습니다.");
 
     private final HttpStatus status;
     private final String message;
