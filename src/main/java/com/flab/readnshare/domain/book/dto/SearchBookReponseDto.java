@@ -10,6 +10,7 @@ public class SearchBookReponseDto {
     public Integer total;
     List<Items> items = new ArrayList<>();
 
+    @Getter
     final static class Items {
         private String title;
         private String image;
