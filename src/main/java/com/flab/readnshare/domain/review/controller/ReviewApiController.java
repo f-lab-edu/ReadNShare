@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class ReviewApiController {
     private final ReviewService reviewService;
 
-    @PostMapping("/save")
+    @PostMapping
     public ResponseEntity<Long> save(@Valid @RequestBody SaveReviewRequestDto dto, @SignInMember Member signInMember) {
         Long reviewId = reviewService.save(dto, signInMember);
         return new ResponseEntity<>(reviewId, HttpStatus.CREATED);
