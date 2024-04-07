@@ -29,6 +29,12 @@ public class ApiExceptionAdvice {
         return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
     }
 
+    @ExceptionHandler(ReviewException.class)
+    public ResponseEntity reviewExceptionHandler(ReviewException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
+    }
+
     @ExceptionHandler(RestCallException.class)
     public ResponseEntity restCallExceptionHandler(RestCallException ex) {
         ErrorResponse response = new ErrorResponse(ex.getCode(), ex.getMessage());
