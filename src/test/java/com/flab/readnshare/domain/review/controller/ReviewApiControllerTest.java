@@ -56,7 +56,7 @@ class ReviewApiControllerTest {
 
         // when
         ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post("/api/review/save")
+                MockMvcRequestBuilders.post("/api/review")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(request))
         );
@@ -73,7 +73,7 @@ class ReviewApiControllerTest {
 
         // when
         ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post("/api/review/save")
+                MockMvcRequestBuilders.post("/api/review")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(request))
         );
@@ -94,7 +94,7 @@ class ReviewApiControllerTest {
 
         // when
         ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post("/api/review/save")
+                MockMvcRequestBuilders.post("/api/review")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(request))
         );
@@ -115,7 +115,7 @@ class ReviewApiControllerTest {
 
         // when
         ResultActions resultActions = mockMvc.perform(
-                MockMvcRequestBuilders.post("/api/review/save")
+                MockMvcRequestBuilders.post("/api/review")
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(new Gson().toJson(request))
         );
