@@ -32,6 +32,9 @@ public class Review extends BaseTimeEntity {
     @JoinColumn(name = "book_id", foreignKey = @ForeignKey(name = "fk_review_to_book"))
     private Book book;
 
+    @Version
+    private Long version;
+
     @Builder
     public Review(Long id, String content, Member member, Book book) {
         this.id = id;
