@@ -41,4 +41,10 @@ public class ApiExceptionAdvice {
         return new ResponseEntity<>(response, ex.getStatus());
     }
 
+    @ExceptionHandler(FollowException.class)
+    public ResponseEntity followExceptionHandler(FollowException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
+    }
+
 }
