@@ -12,7 +12,7 @@ public enum ErrorCode {
 
     // Member
     EMAIL_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 존재하는 회원입니다."),
-    MEMBER_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 회원입니다."),
+    MEMBER_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 회원입니다."),
 
     // Auth
     JWT_EXPIRED(HttpStatus.UNAUTHORIZED, "만료된 토큰입니다."),
@@ -21,7 +21,7 @@ public enum ErrorCode {
     INVALID_PASSWORD(HttpStatus.BAD_REQUEST, "비밀번호가 일치하지 않습니다."),
 
     // Review
-    REVIEW_NOT_FOUND(HttpStatus.BAD_REQUEST, "존재하지 않는 독서 기록 입니다."),
+    REVIEW_NOT_FOUND(HttpStatus.NOT_FOUND, "존재하지 않는 독서 기록 입니다."),
     REVIEW_FORBIDDEN_MEMBER(HttpStatus.FORBIDDEN, "해당 독서 기록에 대한 수정 및 삭제 권한이 없습니다.");
 
     private final HttpStatus status;
