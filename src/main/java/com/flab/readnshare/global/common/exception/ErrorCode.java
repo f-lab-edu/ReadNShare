@@ -9,6 +9,7 @@ import org.springframework.http.HttpStatus;
 public enum ErrorCode {
     // Common
     INVALID_INPUT_PARAMETER(HttpStatus.BAD_REQUEST, "입력값을 확인하세요."),
+    SERVER_ERROR(HttpStatus.INTERNAL_SERVER_ERROR, "시스템에 문제가 발생했습니다."),
 
     // Member
     EMAIL_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 존재하는 회원입니다."),
