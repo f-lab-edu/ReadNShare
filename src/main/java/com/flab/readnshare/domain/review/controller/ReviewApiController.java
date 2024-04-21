@@ -3,6 +3,7 @@ package com.flab.readnshare.domain.review.controller;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.review.dto.SaveReviewRequestDto;
 import com.flab.readnshare.domain.review.dto.UpdateReviewRequestDto;
+import com.flab.readnshare.domain.review.facade.ReviewFacade;
 import com.flab.readnshare.domain.review.service.ReviewService;
 import com.flab.readnshare.global.common.resolver.SignInMember;
 import jakarta.validation.Valid;
@@ -18,10 +19,11 @@ import org.springframework.web.bind.annotation.*;
 @RequestMapping("/api/review")
 public class ReviewApiController {
     private final ReviewService reviewService;
+    private final ReviewFacade reviewFacade;
 
     @PostMapping
     public ResponseEntity<Long> save(@Valid @RequestBody SaveReviewRequestDto dto, @SignInMember Member signInMember) {
-        Long reviewId = reviewService.save(dto, signInMember);
+        Long reviewId = reviewFacade.save(dto, signInMember);
         return new ResponseEntity<>(reviewId, HttpStatus.CREATED);
     }
 

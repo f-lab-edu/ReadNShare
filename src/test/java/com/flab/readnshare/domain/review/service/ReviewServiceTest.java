@@ -1,10 +1,8 @@
 package com.flab.readnshare.domain.review.service;
 
 import com.flab.readnshare.ReviewTestFixture;
-import com.flab.readnshare.domain.book.service.BookService;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.review.domain.Review;
-import com.flab.readnshare.domain.review.dto.SaveReviewRequestDto;
 import com.flab.readnshare.domain.review.dto.UpdateReviewRequestDto;
 import com.flab.readnshare.domain.review.repository.ReviewRepository;
 import com.flab.readnshare.global.common.exception.ReviewException;
@@ -26,9 +24,6 @@ class ReviewServiceTest {
 
     @Mock
     private ReviewRepository reviewRepository;
-    @Mock
-    private BookService bookService;
-
     @InjectMocks
     private ReviewService reviewService;
 
@@ -40,24 +35,6 @@ class ReviewServiceTest {
 
         // when & then
         assertThrows(ReviewException.ReviewNotFoundException.class, () -> reviewService.findById(1L));
-    }
-
-    @Test
-    @DisplayName("독서 기록을 작성하면 review가 등록된다")
-    void save_review_success() {
-        // given
-        SaveReviewRequestDto request = ReviewTestFixture.getSaveReviewRequestDto();
-        Review expectedReview = ReviewTestFixture.getReviewEntity();
-
-        when(reviewRepository.save(any(Review.class))).thenReturn(expectedReview);
-
-        // when
-        Long savedReviewId = reviewService.save(request, mock(Member.class));
-
-        // then
-        assertNotNull(savedReviewId);
-        assertEquals(1L, savedReviewId);
-        verify(reviewRepository, times(1)).save(any(Review.class));
     }
 
     @Test
