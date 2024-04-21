@@ -22,7 +22,7 @@ public class Member extends BaseTimeEntity {
     private String nickName;
 
     @Builder
-    public Member(Long id, String email, String password, String nickName){
+    public Member(Long id, String email, String password, String nickName) {
         this.id = id;
         this.email = email;
         this.password = password;

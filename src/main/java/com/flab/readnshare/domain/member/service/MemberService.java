@@ -18,15 +18,20 @@ public class MemberService {
      * 회원가입
      */
     @Transactional
-    public Member signUp(SignUpRequestDto dto){
+    public Member signUp(SignUpRequestDto dto) {
         validateDuplicateMember(dto.getEmail());
         return memberRepository.save(dto.toEntity());
     }
 
-    private void validateDuplicateMember(String email){
+    private void validateDuplicateMember(String email) {
         memberRepository.findByEmail(email).ifPresent(m -> {
             throw new MemberException.DuplicateEmailException();
         });
+    }
+
+    public Member findByEmail(String email) {
+        return memberRepository.findByEmail(email)
+                .orElseThrow(MemberException.MemberNotFoundException::new);
     }
 
 }
