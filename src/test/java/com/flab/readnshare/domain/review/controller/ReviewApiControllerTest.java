@@ -4,7 +4,6 @@ import com.flab.readnshare.ReviewTestFixture;
 import com.flab.readnshare.domain.book.dto.BookDto;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.review.dto.SaveReviewRequestDto;
-import com.flab.readnshare.domain.review.facade.ReviewFacade;
 import com.flab.readnshare.domain.review.service.ReviewService;
 import com.flab.readnshare.global.common.advice.ApiExceptionAdvice;
 import com.google.gson.Gson;
@@ -32,8 +31,6 @@ import static org.springframework.test.web.servlet.result.MockMvcResultMatchers.
 class ReviewApiControllerTest {
     @Mock
     private ReviewService reviewService;
-    @Mock
-    private ReviewFacade reviewFacade;
     @InjectMocks
     private ReviewApiController reviewApiController;
     @InjectMocks
@@ -55,7 +52,7 @@ class ReviewApiControllerTest {
         // given
         SaveReviewRequestDto request = ReviewTestFixture.getSaveReviewRequestDto();
 
-        given(reviewFacade.save(any(SaveReviewRequestDto.class), any(Member.class))).willReturn(1L);
+        given(reviewService.save(any(SaveReviewRequestDto.class), any(Member.class))).willReturn(1L);
 
         // when
         ResultActions resultActions = mockMvc.perform(
