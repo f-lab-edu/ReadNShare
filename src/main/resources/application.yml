@@ -33,3 +33,7 @@ logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
+firebase:
+  service:
+    key: /firebase/readnshare-firebase-adminsdk.json

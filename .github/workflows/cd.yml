@@ -25,6 +25,19 @@ jobs:
           echo "${{ secrets.APPLICATION_YML_PROD }}" > ./application-prod.yml
         shell: bash
 
+      - name: Make firebase Directory
+        run: |
+          cd ./src/main/resources
+          mkdir firebase
+        shell: bash
+
+      - name: Make Firebase JSON
+        uses: jsdaniell/create-json@v1.2.2
+        with:
+          name: "readnshare-firebase-adminsdk.json"
+          json: ${{ secrets.FIREBASE_ADMIN_JSON }}
+          dir: 'src/main/resources/firebase/'
+
       - name: Grant Execute Permission For Gradlew
         run: chmod +x gradlew
 
