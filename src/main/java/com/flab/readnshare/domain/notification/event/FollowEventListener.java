@@ -2,8 +2,8 @@ package com.flab.readnshare.domain.notification.event;
 
 import com.flab.readnshare.domain.follow.event.FollowEvent;
 import com.flab.readnshare.domain.member.domain.Member;
-import com.flab.readnshare.domain.notification.service.FCMNotificationSender;
 import com.flab.readnshare.domain.notification.domain.FollowNotificationContent;
+import com.flab.readnshare.domain.notification.service.NotificationSender;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.event.TransactionalEventListener;
@@ -11,7 +11,7 @@ import org.springframework.transaction.event.TransactionalEventListener;
 @Component
 @RequiredArgsConstructor
 public class FollowEventListener {
-    private final FCMNotificationSender<FollowNotificationContent> notificationSender;
+    private final NotificationSender<FollowNotificationContent> notificationSender;
 
     @TransactionalEventListener
     public void handle(FollowEvent event) {
