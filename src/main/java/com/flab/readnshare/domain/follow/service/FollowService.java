@@ -7,6 +7,8 @@ import com.flab.readnshare.global.common.exception.FollowException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.util.List;
+
 @Service
 @RequiredArgsConstructor
 public class FollowService {
@@ -33,5 +35,13 @@ public class FollowService {
         followRepository.findByFromMemberAndToMember(fromMember, toMember).ifPresent(f -> {
             followRepository.delete(f);
         });
+    }
+
+    public List<Long> getFollowerIds(Member member) {
+        List<Follow> followers = followRepository.findByToMember(member);
+
+        return followers.stream()
+                .map(follow -> follow.getFromMember().getId())
+                .toList();
     }
 }
