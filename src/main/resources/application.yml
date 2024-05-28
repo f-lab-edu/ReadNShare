@@ -15,6 +15,7 @@ spring:
       hibernate:
         show_sql: true
         format_sql: true
+
   data:
     redis:
       host: ${DATA_REDIS_HOST:localhost}
@@ -23,15 +24,16 @@ spring:
 jwt:
   access:
     expiration: 1800000 #30분
+
   refresh:
     expiration: 1209600000 #2주
 
-naver:
-  book:
-    id: ${NAVER_BOOK_ID:none}
-    secret: ${NAVER_BOOK_SECRET:none}
 
 logging:
   level:
     org.hibernate.SQL: debug
     org.hibernate.type: trace
+
+firebase:
+  service:
+    key: /firebase/readnshare-firebase-adminsdk.json

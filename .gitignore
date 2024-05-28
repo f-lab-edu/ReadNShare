@@ -35,3 +35,6 @@ out/
 
 ### VS Code ###
 .vscode/
+
+### firebase json ###
+readnshare-firebase-adminsdk.json

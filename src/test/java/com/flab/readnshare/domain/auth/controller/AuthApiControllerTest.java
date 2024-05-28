@@ -99,7 +99,7 @@ class AuthApiControllerTest {
         );
 
         // then
-        resultActions.andExpect(status().isNotFound());
+        resultActions.andExpect(status().isBadRequest());
     }
 
     @Test

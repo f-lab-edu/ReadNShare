@@ -44,7 +44,7 @@ class ReviewServiceTest {
         UpdateReviewRequestDto request = ReviewTestFixture.getUpdateReviewRequestDto();
         Review existReview = ReviewTestFixture.getReviewEntity();
 
-        when(reviewRepository.findByIdForUpdate(any(Long.class))).thenReturn(Optional.of(existReview));
+        when(reviewRepository.findById(any(Long.class))).thenReturn(Optional.of(existReview));
 
         // when
         Long updatedReviewId = reviewService.update(existReview.getId(), existReview.getMember(), request);
@@ -61,7 +61,7 @@ class ReviewServiceTest {
         UpdateReviewRequestDto request = ReviewTestFixture.getUpdateReviewRequestDto();
         Review existReview = ReviewTestFixture.getReviewEntity();
 
-        when(reviewRepository.findByIdForUpdate(any(Long.class))).thenReturn(Optional.of(existReview));
+        when(reviewRepository.findById(any(Long.class))).thenReturn(Optional.of(existReview));
 
         assertThrows(ReviewException.ForbiddenMemberException.class
                 , () -> reviewService.update(existReview.getId(), mock(Member.class), request));
