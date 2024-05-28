@@ -2,6 +2,7 @@ package com.flab.readnshare.domain.follow.facade;
 
 import com.flab.readnshare.FollowTestFixture;
 import com.flab.readnshare.domain.follow.domain.Follow;
+import com.flab.readnshare.domain.follow.event.FollowEvent;
 import com.flab.readnshare.domain.follow.service.FollowService;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.member.service.MemberService;
@@ -12,6 +13,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -24,6 +26,8 @@ class FollowFacadeTest {
     private MemberService memberService;
     @Mock
     private FollowService followService;
+    @Mock
+    private ApplicationEventPublisher eventPublisher;
     @InjectMocks
     private FollowFacade followFacade;
 
@@ -48,6 +52,8 @@ class FollowFacadeTest {
         assertNotNull(savedFollow);
         assertEquals(savedFollow.getFromMember(), fromMember);
         assertEquals(savedFollow.getToMember(), toMember);
+
+        verify(eventPublisher).publishEvent(any(FollowEvent.class));
     }
 
     @Test
