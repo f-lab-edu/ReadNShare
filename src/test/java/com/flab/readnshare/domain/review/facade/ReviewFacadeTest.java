@@ -2,6 +2,7 @@ package com.flab.readnshare.domain.review.facade;
 
 import com.flab.readnshare.ReviewTestFixture;
 import com.flab.readnshare.domain.book.service.BookService;
+import com.flab.readnshare.domain.follow.service.FollowService;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.review.domain.Review;
 import com.flab.readnshare.domain.review.dto.SaveReviewRequestDto;
@@ -24,6 +25,8 @@ class ReviewFacadeTest {
     private ReviewService reviewService;
     @Mock
     private BookService bookService;
+    @Mock
+    private FollowService followService;
 
     @InjectMocks
     private ReviewFacade reviewFacade;
