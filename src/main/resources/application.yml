@@ -24,10 +24,13 @@ spring:
 jwt:
   access:
     expiration: 1800000 #30분
-
   refresh:
     expiration: 1209600000 #2주
 
+naver:
+  book:
+    id: ${NAVER_BOOK_ID:none}
+    secret: ${NAVER_BOOK_SECRET:none}
 
 logging:
   level:
