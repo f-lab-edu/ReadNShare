@@ -8,7 +8,9 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
+import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -40,8 +42,9 @@ public class FeedService {
     public List<FeedResponseDto> getFeed(Long memberId, int offset, int limit) {
         String userFeedKey = String.format(KEY, memberId);
 
-        return feedRedisTemplate.opsForZSet()
-                .reverseRange(userFeedKey, offset, limit)
+        return Optional.ofNullable(feedRedisTemplate.opsForZSet()
+                .reverseRange(userFeedKey, offset, limit))
+                .orElse(Collections.emptySet())
                 .stream()
                 .map(FeedResponseDto.class::cast)
                 .toList();
