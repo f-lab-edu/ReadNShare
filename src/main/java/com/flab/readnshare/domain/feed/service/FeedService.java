@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
+import java.util.concurrent.TimeUnit;
 
 @Service
 @RequiredArgsConstructor
@@ -18,6 +19,7 @@ public class FeedService {
     private final RedisTemplate<String, Object> feedRedisTemplate;
 
     private static final String KEY = "user:%d:feed";
+    private static final long FEED_EXPIRE_DURATION = 7;
 
     public void addToFeed(List<Long> followerIds, Review review) {
         Long timestamp = System.currentTimeMillis();
@@ -33,6 +35,7 @@ public class FeedService {
                 String userFeedKey = String.format(KEY, followerId);
                 BoundZSetOperations<String, Object> operations = feedRedisTemplate.boundZSetOps(userFeedKey);
                 operations.add(dto, timestamp);
+                operations.expire(FEED_EXPIRE_DURATION, TimeUnit.DAYS);
             }
 
             return null;
