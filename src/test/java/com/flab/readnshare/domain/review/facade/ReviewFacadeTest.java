@@ -2,10 +2,12 @@ package com.flab.readnshare.domain.review.facade;
 
 import com.flab.readnshare.ReviewTestFixture;
 import com.flab.readnshare.domain.book.service.BookService;
+import com.flab.readnshare.domain.follow.event.FollowEvent;
 import com.flab.readnshare.domain.follow.service.FollowService;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.review.domain.Review;
 import com.flab.readnshare.domain.review.dto.SaveReviewRequestDto;
+import com.flab.readnshare.domain.review.event.ReviewEvent;
 import com.flab.readnshare.domain.review.service.ReviewService;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
@@ -13,6 +15,7 @@ import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
+import org.springframework.context.ApplicationEventPublisher;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -26,7 +29,7 @@ class ReviewFacadeTest {
     @Mock
     private BookService bookService;
     @Mock
-    private FollowService followService;
+    private ApplicationEventPublisher eventPublisher;
 
     @InjectMocks
     private ReviewFacade reviewFacade;
@@ -47,6 +50,7 @@ class ReviewFacadeTest {
         assertNotNull(savedReviewId);
         assertEquals(1L, savedReviewId);
         verify(reviewService, times(1)).save(any(Review.class));
+        verify(eventPublisher).publishEvent(any(ReviewEvent.class));
     }
 
 }
