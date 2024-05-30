@@ -46,12 +46,12 @@ public class FeedFacade {
 
         Set<Object> feedSet;
         if (lastReviewId == null) {
-            feedSet = feedRedisTemplate.opsForZSet().reverseRange(userFeedKey, 0, limit - 1);
+            feedSet = feedRedisTemplate.opsForZSet().reverseRange(userFeedKey, 0, (limit - 1));
         } else {
             Double score = feedRedisTemplate.opsForZSet().score(userFeedKey, String.valueOf(lastReviewId));
 
             // 마지막 리뷰의 score 이전 데이터들을 역순으로 limit 만큼 조회
-            feedSet = feedRedisTemplate.opsForZSet().reverseRangeByScore(userFeedKey, Double.MIN_VALUE, score - 1, 0, limit);
+            feedSet = feedRedisTemplate.opsForZSet().reverseRangeByScore(userFeedKey, Double.MIN_VALUE, (score - 1), 0, limit);
         }
 
         return Optional.ofNullable(feedSet)
