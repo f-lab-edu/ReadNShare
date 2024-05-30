@@ -4,6 +4,6 @@ import lombok.Getter;
 
 @Getter
 public class FeedRequestDto {
-    private Integer offset;
+    private Long lastReviewId;
     private Integer limit;
 }

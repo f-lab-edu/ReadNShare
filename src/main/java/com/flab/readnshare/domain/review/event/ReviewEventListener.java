@@ -1,6 +1,6 @@
 package com.flab.readnshare.domain.review.event;
 
-import com.flab.readnshare.domain.feed.service.FeedService;
+import com.flab.readnshare.domain.feed.facade.FeedFacade;
 import com.flab.readnshare.domain.follow.service.FollowService;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.review.domain.Review;
@@ -14,7 +14,7 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ReviewEventListener {
     private final FollowService followService;
-    private final FeedService feedService;
+    private final FeedFacade feedFacade;
 
     @TransactionalEventListener
     private void updateFollowersFeed(ReviewEvent event) {
@@ -24,7 +24,7 @@ public class ReviewEventListener {
         List<Long> followerIds = followService.getFollowerIds(writer);
 
         if (!followerIds.isEmpty()) {
-            feedService.addToFeed(followerIds, review);
+            feedFacade.addToFeed(followerIds, review);
         }
     }
 }
