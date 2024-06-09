@@ -17,6 +17,7 @@ import org.springframework.data.redis.core.*;
 
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
@@ -62,19 +63,28 @@ class FeedFacadeTest {
         when(zSetOperations.reverseRange(anyString(), anyLong(), anyLong()))
                 .thenReturn(feedSet);
 
-        Review review = ReviewTestFixture.getReviewEntity();
-        when(reviewService.findById(anyLong())).thenReturn(review);
+        List<Review> reviews = FeedTestFixture.getReviews(feedSet);
+        List<Long> reviewIds = reviews.stream().map(Review::getId).collect(Collectors.toList());
+
+        when(reviewService.findByIdIn(reviewIds)).thenReturn(reviews);
 
         // when
         List<FeedResponseDto> feed = feedFacade.getFeed(memberId, null, limit);
 
         // then
         verify(zSetOperations).reverseRange(eq(userFeedKey), eq(0L), eq((long) limit - 1));
-        verify(reviewService, times(feedSet.size())).findById(anyLong());
+        verify(reviewService, times(1)).findByIdIn(anyList());
 
         assertEquals(feedSet.size(), feed.size());
-        assertEquals(review.getId(), feed.get(0).getReviewId());
-        assertEquals(review.getContent(), feed.get(0).getContent());
+        for (Review review : reviews) {
+            FeedResponseDto dto = feed.stream()
+                    .filter(f -> f.getReviewId().equals(review.getId()))
+                    .findFirst()
+                    .orElseThrow(() -> new AssertionError("Review not found in feed"));
+
+            assertEquals(review.getId(), dto.getReviewId());
+            assertEquals(review.getContent(), dto.getContent());
+        }
     }
 
     @Test
@@ -95,30 +105,28 @@ class FeedFacadeTest {
         Review review1 = createMockReview(1L, "좋은 리뷰입니다!", "이순신", "다른 책 제목");
         Review review2 = createMockReview(2L, "또 다른 리뷰!", "박지성", "다른 책 제목 2");
 
-        when(reviewService.findById(1L)).thenReturn(review1);
-        when(reviewService.findById(2L)).thenReturn(review2);
+        List<Review> reviews = List.of(review1, review2);
+        List<Long> reviewIds = reviews.stream().map(Review::getId).collect(Collectors.toList());
+
+        when(reviewService.findByIdIn(reviewIds)).thenReturn(reviews);
 
         // when
         List<FeedResponseDto> feed = feedFacade.getFeed(memberId, lastReviewId, limit);
 
         // then
         verify(zSetOperations).reverseRangeByScore(eq(userFeedKey), eq(Double.MIN_VALUE), eq(lastReviewScore - 1), eq(0L), eq((long) limit));
-        verify(reviewService).findById(1L);
-        verify(reviewService).findById(2L);
+        verify(reviewService).findByIdIn(eq(reviewIds));
 
-        assertEquals(2, feed.size());
+        assertEquals(reviews.size(), feed.size());
 
-        FeedResponseDto dto1 = feed.stream().filter(f -> f.getReviewId() == 1L).findFirst().orElse(null);
-        assertEquals(1L, dto1.getReviewId());
-        assertEquals("이순신", dto1.getNickName());
-        assertEquals("좋은 리뷰입니다!", dto1.getContent());
-        assertEquals("다른 책 제목", dto1.getBookTitle());
-
-        FeedResponseDto dto2 = feed.stream().filter(f -> f.getReviewId() == 2L).findFirst().orElse(null);
-        assertEquals(2L, dto2.getReviewId());
-        assertEquals("박지성", dto2.getNickName());
-        assertEquals("또 다른 리뷰!", dto2.getContent());
-        assertEquals("다른 책 제목 2", dto2.getBookTitle());
+        for (Review review : reviews) {
+            FeedResponseDto dto = feed.stream().filter(f -> f.getReviewId().equals(review.getId())).findFirst().orElse(null);
+            assertNotNull(dto);
+            assertEquals(review.getId(), dto.getReviewId());
+            assertEquals(review.getMember().getNickName(), dto.getNickName());
+            assertEquals(review.getContent(), dto.getContent());
+            assertEquals(review.getBook().getTitle(), dto.getBookTitle());
+        }
     }
 
     private Review createMockReview(Long id, String content, String nickName, String bookTitle) {
