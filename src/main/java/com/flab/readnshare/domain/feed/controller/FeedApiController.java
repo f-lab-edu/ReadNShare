@@ -19,7 +19,7 @@ import java.util.List;
 public class FeedApiController {
     private final FeedFacade feedFacade;
 
-    @GetMapping("/api/feed")
+    @GetMapping("/api/feeds")
     public ResponseEntity<List<FeedResponseDto>> getFeed(@SignInMember Member member, @RequestBody FeedRequestDto dto) {
         return new ResponseEntity<>(feedFacade.getFeed(member.getId(), dto.getLastReviewId(), dto.getLimit()), HttpStatus.OK);
     }
