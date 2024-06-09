@@ -17,6 +17,8 @@ import org.springframework.retry.annotation.Retryable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+import java.util.List;
+
 
 @Service
 @Transactional(readOnly = true)
@@ -62,5 +64,9 @@ public class ReviewService {
         review.verifyMember(signInMember);
 
         reviewRepository.delete(review);
+    }
+
+    public List<Review> findByIdIn(List<Long> reviewIds) {
+        return reviewRepository.findByIdIn(reviewIds);
     }
 }
