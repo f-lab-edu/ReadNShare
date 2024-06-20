@@ -26,6 +26,8 @@ jwt:
     expiration: 1800000 #30분
   refresh:
     expiration: 1209600000 #2주
+  security:
+    secretKey: my-custom-secret-key-that-is-very-long
 
 naver:
   book:

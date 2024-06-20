@@ -10,7 +10,7 @@ import io.jsonwebtoken.security.SignatureException;
 import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
-import lombok.RequiredArgsConstructor;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -18,7 +18,6 @@ import java.security.Key;
 import java.util.Date;
 import java.util.Optional;
 
-@RequiredArgsConstructor
 @Component
 public class JwtUtil {
     @Value("${jwt.access.expiration}")
@@ -27,10 +26,15 @@ public class JwtUtil {
     @Value("${jwt.refresh.expiration}")
     private Long refreshTokenValidTime;
 
-    private final Key key = Keys.secretKeyFor(SignatureAlgorithm.HS256);
+    private final Key key;
 
     private final RefreshTokenRepository refreshTokenRepository;
 
+    @Autowired
+    public JwtUtil(@Value("${jwt.security.secretKey}") String secretKey, RefreshTokenRepository refreshTokenRepository) {
+        this.key = Keys.hmacShaKeyFor(secretKey.getBytes());
+        this.refreshTokenRepository = refreshTokenRepository;
+    }
 
     public String createAccessToken(Long memberId) {
         Claims claims = Jwts.claims().setSubject(String.valueOf(memberId));
@@ -39,7 +43,7 @@ public class JwtUtil {
         return Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .signWith(key)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(new Date(now.getTime() + accessTokenValidTime))
                 .compact();
     }
@@ -51,7 +55,7 @@ public class JwtUtil {
         String refreshToken = Jwts.builder()
                 .setClaims(claims)
                 .setIssuedAt(now)
-                .signWith(key)
+                .signWith(key, SignatureAlgorithm.HS256)
                 .setExpiration(new Date(now.getTime() + refreshTokenValidTime))
                 .compact();
 
@@ -101,8 +105,8 @@ public class JwtUtil {
                 .orElseThrow(AuthException.NullTokenException::new);
     }
 
-    public String extractMemberId(String token){
-       return Jwts.parserBuilder()
+    public String extractMemberId(String token) {
+        return Jwts.parserBuilder()
                 .setSigningKey(key)
                 .build()
                 .parseClaimsJws(token)
