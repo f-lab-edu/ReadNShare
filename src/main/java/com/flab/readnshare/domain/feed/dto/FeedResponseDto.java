@@ -8,12 +8,14 @@ import lombok.NoArgsConstructor;
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 public class FeedResponseDto {
+    private Long reviewId;
     private String nickName;
     private String content;
     private String bookTitle;
 
     @Builder
-    public FeedResponseDto(String nickName, String content, String bookTitle) {
+    public FeedResponseDto(Long reviewId, String nickName, String content, String bookTitle) {
+        this.reviewId = reviewId;
         this.nickName = nickName;
         this.content = content;
         this.bookTitle = bookTitle;
