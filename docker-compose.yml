@@ -3,7 +3,7 @@ version: '3.8'
 services:
   app:
     container_name: readnshare-app
-    build: .
+    image: ${DOCKER_USERNAME}/readnshare:latest
     ports:
       - "8080:8080"
     depends_on:
