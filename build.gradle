@@ -76,7 +76,6 @@ jacocoTestReport {
                     fileTree(dir: it, exclude: [
                             '**/*Application*'
                             , 'com/flab/readnshare/global/**/*'
-                            , '**/domain/**/domain/**'
                             , '**/*Dto*'
                     ])
                 })
