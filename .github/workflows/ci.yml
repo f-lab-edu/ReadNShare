@@ -29,4 +29,15 @@ jobs:
         run: chmod +x gradlew
 
       - name: Build With Gradle
-        run: ./gradlew build
+        run: ./gradlew build jacocoTestReport
+
+      - name: Jacoco Report to PR
+        id: jacoco
+        uses: madrapps/jacoco-report@v1.7.1
+        with:
+          paths: ${{ github.workspace }}/build/reports/jacoco/testCoverage/testCoverage.xml
+          token: ${{ secrets.GITHUB_TOKEN }}
+          title: '📝 Test Coverage Report'
+          min-coverage-overall: 40
+          min-coverage-changed-files: 60
+          update-comment: true
