@@ -1,0 +1,27 @@
+package com.flab.readnshare.global.common.exception;
+
+import lombok.Getter;
+
+@Getter
+public class NotificationException extends RuntimeException {
+    private final ErrorCode errorCode;
+
+    public NotificationException(ErrorCode errorCode) {
+        super(errorCode.getMessage());
+        this.errorCode = errorCode;
+    }
+
+    public static class FCMTokenNotFoundException extends NotificationException {
+        private final Long memberId;
+
+        public FCMTokenNotFoundException(Long memberId) {
+            super(ErrorCode.FCM_TOKEN_NOT_FOUND);
+            this.memberId = memberId;
+        }
+
+        @Override
+        public String getMessage() {
+            return super.getMessage() + String.format(" Member ID: %d", memberId);
+        }
+    }
+}
