@@ -6,12 +6,15 @@ import com.flab.readnshare.domain.notification.repository.FCMTokenRepository;
 import com.flab.readnshare.global.common.exception.NotificationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @RequiredArgsConstructor
+@Transactional(readOnly = true)
 public class FCMService {
     private final FCMTokenRepository fcmTokenRepository;
 
+    @Transactional
     public void saveFCMToken(Member member, String token) {
         FCMToken fcmToken = FCMToken.builder()
                 .memberId(member.getId())
@@ -25,5 +28,10 @@ public class FCMService {
         return fcmTokenRepository.findById(memberId)
                 .orElseThrow(() -> new NotificationException.FCMTokenNotFoundException(memberId))
                 .getFcmTokenValue();
+    }
+
+    @Transactional
+    public void deleteFCMToken(Long memberId) {
+        fcmTokenRepository.deleteById(memberId);
     }
 }
