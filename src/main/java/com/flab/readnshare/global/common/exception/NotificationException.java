@@ -24,4 +24,18 @@ public class NotificationException extends RuntimeException {
             return super.getMessage() + String.format(" Member ID: %d", memberId);
         }
     }
+
+    public static class InvalidFCMTokenException extends NotificationException {
+        private final Long memberId;
+
+        public InvalidFCMTokenException(Long memberId) {
+            super(ErrorCode.INVALID_FCM_TOKEN);
+            this.memberId = memberId;
+        }
+
+        @Override
+        public String getMessage() {
+            return super.getMessage() + String.format(" Member ID: %d", memberId);
+        }
+    }
 }

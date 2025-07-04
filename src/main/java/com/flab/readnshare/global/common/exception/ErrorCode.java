@@ -30,7 +30,8 @@ public enum ErrorCode {
     FOLLOW_DUPLICATION(HttpStatus.BAD_REQUEST, "이미 해당 사용자를 팔로우하고 있습니다."),
 
     // Notification
-    FCM_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "FCM 토큰을 찾을 수 없습니다.");
+    FCM_TOKEN_NOT_FOUND(HttpStatus.NOT_FOUND, "FCM 토큰을 찾을 수 없습니다."),
+    INVALID_FCM_TOKEN(HttpStatus.BAD_REQUEST, "유효하지 않은 FCM 토큰입니다." );
 
     private final HttpStatus status;
     private final String message;

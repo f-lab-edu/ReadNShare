@@ -25,9 +25,9 @@ public class FCMNotificationSender<T extends NotificationContent> implements Not
     public void sendNotification(T content) {
         String token = fcmService.getFCMToken(content.getReceiverId());
 
-/*        if (!(StringUtils.hasText(token))) {
+        if (!(StringUtils.hasText(token))) {
             throw new NotificationException.InvalidFCMTokenException(content.getReceiverId());
-        }*/
+        }
 
         Message message = Message
                 .builder()

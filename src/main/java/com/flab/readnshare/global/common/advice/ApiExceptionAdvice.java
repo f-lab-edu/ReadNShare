@@ -55,4 +55,10 @@ public class ApiExceptionAdvice {
         return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
     }
 
+    @ExceptionHandler(NotificationException.class)
+    public ResponseEntity notificationExceptionHandler(NotificationException ex) {
+        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
+        return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
+    }
+
 }
