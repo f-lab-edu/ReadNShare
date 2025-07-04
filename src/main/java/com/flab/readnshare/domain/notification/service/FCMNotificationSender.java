@@ -19,13 +19,14 @@ import static com.google.firebase.messaging.MessagingErrorCode.UNREGISTERED;
 @Slf4j
 public class FCMNotificationSender<T extends NotificationContent> implements NotificationSender<T> {
     private final FCMService fcmService;
+    private final FirebaseMessaging firebaseMessaging;
 
     @Override
     public void sendNotification(T content) {
         String token = fcmService.getFCMToken(content.getReceiverId());
 
 /*        if (!(StringUtils.hasText(token))) {
-            throw new NotificationException.InvalidFCMTokenException(memberId);
+            throw new NotificationException.InvalidFCMTokenException(content.getReceiverId());
         }*/
 
         Message message = Message
@@ -40,7 +41,7 @@ public class FCMNotificationSender<T extends NotificationContent> implements Not
     }
 
     private void sendMessage(Message message, T content) {
-        ApiFuture<String> future = FirebaseMessaging.getInstance().sendAsync(message);
+        ApiFuture<String> future = firebaseMessaging.sendAsync(message);
 
         ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
             @Override
