@@ -25,40 +25,16 @@ public class ApiExceptionAdvice {
         return new ResponseEntity<>(response, ErrorCode.SERVER_ERROR.getStatus());
     }
 
-    @ExceptionHandler(MemberException.class)
-    public ResponseEntity memberExceptionHandler(MemberException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
-        return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
-    }
-
-    @ExceptionHandler(AuthException.class)
-    public ResponseEntity authExceptionHandler(AuthException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
-        return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
-    }
-
-    @ExceptionHandler(ReviewException.class)
-    public ResponseEntity reviewExceptionHandler(ReviewException ex) {
+    @ExceptionHandler(BaseDomainException.class)
+    public ResponseEntity<ErrorResponse> baseDomainExceptionHandler(BaseDomainException ex) {
         ErrorResponse response = new ErrorResponse(ex.getErrorCode());
         return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
     }
 
     @ExceptionHandler(RestCallException.class)
-    public ResponseEntity restCallExceptionHandler(RestCallException ex) {
+    public ResponseEntity<ErrorResponse> restCallExceptionHandler(RestCallException ex) {
         ErrorResponse response = new ErrorResponse(ex.getCode(), ex.getMessage());
         return new ResponseEntity<>(response, ex.getStatus());
-    }
-
-    @ExceptionHandler(FollowException.class)
-    public ResponseEntity followExceptionHandler(FollowException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
-        return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
-    }
-
-    @ExceptionHandler(NotificationException.class)
-    public ResponseEntity notificationExceptionHandler(NotificationException ex) {
-        ErrorResponse response = new ErrorResponse(ex.getErrorCode());
-        return new ResponseEntity<>(response, ex.getErrorCode().getStatus());
     }
 
 }
