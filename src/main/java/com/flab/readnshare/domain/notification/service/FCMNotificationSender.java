@@ -23,10 +23,11 @@ public class FCMNotificationSender<T extends NotificationContent> implements Not
 
     @Override
     public void sendNotification(T content) {
-        String token = fcmService.getFCMToken(content.getReceiverId());
+        Long receiverId = content.getReceiverId();
+        String token = fcmService.getFCMToken(receiverId);
 
         if (!(StringUtils.hasText(token))) {
-            throw new NotificationException.InvalidFCMTokenException(content.getReceiverId());
+            throw new NotificationException.InvalidFCMTokenException(receiverId);
         }
 
         Message message = Message
@@ -37,41 +38,41 @@ public class FCMNotificationSender<T extends NotificationContent> implements Not
                                 .setBody(content.getBody()).build())
                 .setToken(token).build();
 
-        sendMessage(message, content);
+        sendMessage(message, receiverId);
     }
 
-    private void sendMessage(Message message, T content) {
+    private void sendMessage(Message message, Long receiverId) {
         ApiFuture<String> future = firebaseMessaging.sendAsync(message);
 
         ApiFutures.addCallback(future, new ApiFutureCallback<String>() {
             @Override
             public void onSuccess(String messageId) {
-                log.info("FCM 메시지 전송 성공: messageId={}, receiverId={}", messageId, content.getReceiverId());
+                log.info("FCM 메시지 전송 성공: messageId={}, receiverId={}", messageId, receiverId);
 
             }
 
             @Override
             public void onFailure(Throwable e) {
-                log.error("FCM 메시지 전송 실패: receiverId={}, 오류={}", content.getReceiverId(), e.getMessage());
+                log.error("FCM 메시지 전송 실패: receiverId={}, 오류={}", receiverId, e.getMessage());
 
-                handleFailure(content, e);
+                handleFailure(receiverId, e);
             }
         });
     }
 
-    private void handleFailure(T content, Throwable e) {
+    private void handleFailure(Long receiverId, Throwable e) {
         if (e instanceof FirebaseMessagingException fme) {
             MessagingErrorCode errorCode = fme.getMessagingErrorCode();
 
             if ((errorCode == INVALID_ARGUMENT) || (errorCode == UNREGISTERED)) {
                 log.warn("FCM 토큰 오류 발생: receiverId={}, errorCode={}",
-                        content.getReceiverId(), fme.getMessagingErrorCode());
+                        receiverId, fme.getMessagingErrorCode());
 
-                fcmService.deleteFCMToken(content.getReceiverId());
+                fcmService.deleteFCMToken(receiverId);
             }
         } else {
             log.error("FCM 메시지 전송 중 예상치 못한 오류: receiverId={}, error={}"
-                    , content.getReceiverId(), e.getMessage());
+                    , receiverId, e.getMessage());
         }
     }
 
