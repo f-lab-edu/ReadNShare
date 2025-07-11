@@ -57,7 +57,7 @@ public class FCMNotificationSender<T extends NotificationContent> implements Not
 
                 handleFailure(receiverId, e);
             }
-        });
+        }, Runnable::run);
     }
 
     private void handleFailure(Long receiverId, Throwable e) {
