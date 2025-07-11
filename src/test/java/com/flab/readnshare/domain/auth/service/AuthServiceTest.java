@@ -2,10 +2,11 @@ package com.flab.readnshare.domain.auth.service;
 
 import com.flab.readnshare.AuthTestFixture;
 import com.flab.readnshare.domain.auth.dto.SignInRequestDto;
+import com.flab.readnshare.domain.auth.exception.ExpiredTokenException;
+import com.flab.readnshare.domain.auth.exception.InvalidPasswordException;
 import com.flab.readnshare.domain.auth.repository.RefreshTokenRepository;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.member.repository.MemberRepository;
-import com.flab.readnshare.global.common.exception.AuthException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -63,7 +64,7 @@ class AuthServiceTest {
         when(memberRepository.findByEmail(any(String.class))).thenReturn(Optional.ofNullable(expectedMember));
 
         // when & then
-        assertThrows(AuthException.InvalidPasswordException.class, () -> authService.signIn(request));
+        assertThrows(InvalidPasswordException.class, () -> authService.signIn(request));
     }
 
     @Test
@@ -74,7 +75,7 @@ class AuthServiceTest {
         when(refreshTokenRepository.findById(refreshToken)).thenReturn(Optional.empty());
 
         // when & then
-        assertThrows(AuthException.ExpiredTokenException.class, () -> authService.validateTokenFromRedis(refreshToken));
+        assertThrows(ExpiredTokenException.class, () -> authService.validateTokenFromRedis(refreshToken));
 
     }
 }

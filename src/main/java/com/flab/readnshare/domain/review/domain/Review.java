@@ -2,8 +2,8 @@ package com.flab.readnshare.domain.review.domain;
 
 import com.flab.readnshare.domain.book.domain.Book;
 import com.flab.readnshare.domain.member.domain.Member;
+import com.flab.readnshare.domain.review.exception.ForbiddenMemberException;
 import com.flab.readnshare.global.common.BaseTimeEntity;
-import com.flab.readnshare.global.common.exception.ReviewException;
 import jakarta.persistence.*;
 import lombok.AccessLevel;
 import lombok.Builder;
@@ -45,7 +45,7 @@ public class Review extends BaseTimeEntity {
 
     public void verifyMember(Member member) {
         if (this.member != member) {
-            throw new ReviewException.ForbiddenMemberException();
+            throw new ForbiddenMemberException();
         }
     }
 

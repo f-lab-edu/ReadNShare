@@ -4,8 +4,9 @@ import com.flab.readnshare.ReviewTestFixture;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.review.domain.Review;
 import com.flab.readnshare.domain.review.dto.UpdateReviewRequestDto;
+import com.flab.readnshare.domain.review.exception.ForbiddenMemberException;
+import com.flab.readnshare.domain.review.exception.ReviewNotFoundException;
 import com.flab.readnshare.domain.review.repository.ReviewRepository;
-import com.flab.readnshare.global.common.exception.ReviewException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -34,7 +35,7 @@ class ReviewServiceTest {
         when(reviewRepository.findById(any(Long.class))).thenReturn(Optional.empty());
 
         // when & then
-        assertThrows(ReviewException.ReviewNotFoundException.class, () -> reviewService.findById(1L));
+        assertThrows(ReviewNotFoundException.class, () -> reviewService.findById(1L));
     }
 
     @Test
@@ -63,7 +64,7 @@ class ReviewServiceTest {
 
         when(reviewRepository.findByIdForUpdate(any(Long.class))).thenReturn(Optional.of(existReview));
 
-        assertThrows(ReviewException.ForbiddenMemberException.class
+        assertThrows(ForbiddenMemberException.class
                 , () -> reviewService.update(existReview.getId(), mock(Member.class), request));
     }
 

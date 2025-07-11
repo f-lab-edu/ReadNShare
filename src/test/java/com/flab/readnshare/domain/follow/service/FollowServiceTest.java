@@ -2,9 +2,9 @@ package com.flab.readnshare.domain.follow.service;
 
 import com.flab.readnshare.FollowTestFixture;
 import com.flab.readnshare.domain.follow.domain.Follow;
+import com.flab.readnshare.domain.follow.exception.DuplicateFollowException;
 import com.flab.readnshare.domain.follow.repository.FollowRepository;
 import com.flab.readnshare.domain.member.domain.Member;
-import com.flab.readnshare.global.common.exception.FollowException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -36,7 +36,7 @@ class FollowServiceTest {
         when(followRepository.findByFromMemberAndToMember(fromMember, toMember)).thenReturn(follow);
 
         // when & then
-        assertThrows(FollowException.DuplicateFollowException.class, () ->
+        assertThrows(DuplicateFollowException.class, () ->
                 followService.save(fromMember, toMember));
     }
 

@@ -1,7 +1,7 @@
 package com.flab.readnshare.domain.notification.service;
 
 import com.flab.readnshare.NotificationTestFixture.TestNotificationContent;
-import com.flab.readnshare.global.common.exception.NotificationException;
+import com.flab.readnshare.domain.notification.exception.InvalidFCMTokenException;
 import com.google.api.core.ApiFutures;
 import com.google.firebase.messaging.FirebaseMessaging;
 import com.google.firebase.messaging.FirebaseMessagingException;
@@ -61,7 +61,7 @@ class FCMNotificationSenderTest {
         when(fcmService.getFCMToken(receiverId)).thenReturn(null);
 
         // when & then
-        assertThrows(NotificationException.InvalidFCMTokenException.class,
+        assertThrows(InvalidFCMTokenException.class,
                 () -> fcmNotificationSender.sendNotification(content));
 
         verify(firebaseMessaging, never()).sendAsync(any(Message.class));

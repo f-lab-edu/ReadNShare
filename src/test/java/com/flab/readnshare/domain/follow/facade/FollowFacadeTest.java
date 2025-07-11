@@ -3,10 +3,10 @@ package com.flab.readnshare.domain.follow.facade;
 import com.flab.readnshare.FollowTestFixture;
 import com.flab.readnshare.domain.follow.domain.Follow;
 import com.flab.readnshare.domain.follow.event.FollowEvent;
+import com.flab.readnshare.domain.follow.exception.SelfFollowException;
 import com.flab.readnshare.domain.follow.service.FollowService;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.member.service.MemberService;
-import com.flab.readnshare.global.common.exception.FollowException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Test;
 import org.junit.jupiter.api.extension.ExtendWith;
@@ -66,7 +66,7 @@ class FollowFacadeTest {
         when(memberService.findByEmail(memberEmail)).thenReturn(fromMember);
 
         // when & then
-        assertThrows(FollowException.SelfFollowException.class, () ->
+        assertThrows(SelfFollowException.class, () ->
                 followFacade.follow(memberEmail, fromMember));
     }
 

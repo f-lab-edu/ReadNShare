@@ -1,8 +1,8 @@
 package com.flab.readnshare.global.common.auth.jwt;
 
 import com.flab.readnshare.domain.auth.domain.RefreshToken;
+import com.flab.readnshare.domain.auth.exception.NullTokenException;
 import com.flab.readnshare.domain.auth.repository.RefreshTokenRepository;
-import com.flab.readnshare.global.common.exception.AuthException;
 import com.flab.readnshare.global.common.util.CookieUtils;
 import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
@@ -96,13 +96,13 @@ public class JwtUtil {
 
     public String extractRefreshToken(HttpServletRequest request) {
         Optional<Cookie> cookie = CookieUtils.getCookie(request, "refreshToken");
-        return cookie.map(Cookie::getValue).orElseThrow(AuthException.NullTokenException::new);
+        return cookie.map(Cookie::getValue).orElseThrow(NullTokenException::new);
     }
 
     public String extractAccessToken(HttpServletRequest request) {
         return Optional.ofNullable(request.getHeader("Authorization"))
                 .map(token -> token.substring("Bearer ".length()))
-                .orElseThrow(AuthException.NullTokenException::new);
+                .orElseThrow(NullTokenException::new);
     }
 
     public String extractMemberId(String token) {
