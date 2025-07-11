@@ -3,12 +3,9 @@ package com.flab.readnshare.global.common.exception;
 import lombok.Getter;
 
 @Getter
-public class AuthException extends RuntimeException {
-    private final ErrorCode errorCode;
-
+public class AuthException extends BaseDomainException {
     public AuthException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 
     public static class InvalidPasswordException extends AuthException {

@@ -3,12 +3,9 @@ package com.flab.readnshare.global.common.exception;
 import lombok.Getter;
 
 @Getter
-public class ReviewException extends RuntimeException {
-    private final ErrorCode errorCode;
-
+public class ReviewException extends BaseDomainException {
     public ReviewException(ErrorCode errorCode) {
-        super(errorCode.getMessage());
-        this.errorCode = errorCode;
+        super(errorCode);
     }
 
     public static class ReviewNotFoundException extends ReviewException {
