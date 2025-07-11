@@ -1,12 +1,13 @@
 package com.flab.readnshare.domain.auth.service;
 
 import com.flab.readnshare.domain.auth.dto.SignInRequestDto;
+import com.flab.readnshare.domain.auth.exception.ExpiredTokenException;
+import com.flab.readnshare.domain.auth.exception.InvalidPasswordException;
 import com.flab.readnshare.domain.auth.repository.RefreshTokenRepository;
 import com.flab.readnshare.domain.member.domain.Member;
+import com.flab.readnshare.domain.member.exception.MemberNotFoundException;
 import com.flab.readnshare.domain.member.repository.MemberRepository;
 import com.flab.readnshare.global.common.auth.jwt.JwtUtil;
-import com.flab.readnshare.global.common.exception.AuthException;
-import com.flab.readnshare.global.common.exception.MemberException;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
@@ -24,12 +25,12 @@ public class AuthService {
      * 로그인
      */
     public Member signIn(SignInRequestDto dto) {
-        Member member = memberRepository.findByEmail(dto.getEmail()).orElseThrow(MemberException.MemberNotFoundException::new);
+        Member member = memberRepository.findByEmail(dto.getEmail()).orElseThrow(MemberNotFoundException::new);
 
         if (member.getPassword().equals(dto.getPassword())) {
             return member;
         }
-        throw new AuthException.InvalidPasswordException();
+        throw new InvalidPasswordException();
     }
 
     public void sendAccessToken(HttpServletResponse response, Long memberId) {
@@ -44,7 +45,7 @@ public class AuthService {
 
     public void validateTokenFromRedis(String refreshToken) {
         if (refreshTokenRepository.findById(refreshToken).isEmpty()) {
-            throw new AuthException.ExpiredTokenException();
+            throw new ExpiredTokenException();
         }
     }
 

@@ -1,6 +1,8 @@
 package com.flab.readnshare.global.common.auth.jwt;
 
-import com.flab.readnshare.global.common.exception.AuthException;
+import com.flab.readnshare.domain.auth.exception.DeniedTokenException;
+import com.flab.readnshare.domain.auth.exception.ExpiredTokenException;
+import com.flab.readnshare.domain.auth.exception.NullTokenException;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
@@ -19,14 +21,14 @@ public class JwtAuthInterceptor implements HandlerInterceptor {
 
         if (accessToken != null) {
             switch (jwtUtil.validateToken(accessToken)) {
-                case DENIED -> throw new AuthException.DeniedTokenException();
-                case EXPIRED -> throw new AuthException.ExpiredTokenException();
+                case DENIED -> throw new DeniedTokenException();
+                case EXPIRED -> throw new ExpiredTokenException();
                 case ACCESS -> {
                     return true;
                 }
             }
         } else {
-            throw new AuthException.NullTokenException();
+            throw new NullTokenException();
         }
 
         return false;

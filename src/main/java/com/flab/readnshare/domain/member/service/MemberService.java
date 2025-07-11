@@ -2,8 +2,9 @@ package com.flab.readnshare.domain.member.service;
 
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.member.dto.SignUpRequestDto;
+import com.flab.readnshare.domain.member.exception.DuplicateEmailException;
+import com.flab.readnshare.domain.member.exception.MemberNotFoundException;
 import com.flab.readnshare.domain.member.repository.MemberRepository;
-import com.flab.readnshare.global.common.exception.MemberException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -25,13 +26,13 @@ public class MemberService {
 
     private void validateDuplicateMember(String email) {
         memberRepository.findByEmail(email).ifPresent(m -> {
-            throw new MemberException.DuplicateEmailException();
+            throw new DuplicateEmailException();
         });
     }
 
     public Member findByEmail(String email) {
         return memberRepository.findByEmail(email)
-                .orElseThrow(MemberException.MemberNotFoundException::new);
+                .orElseThrow(MemberNotFoundException::new);
     }
 
 }

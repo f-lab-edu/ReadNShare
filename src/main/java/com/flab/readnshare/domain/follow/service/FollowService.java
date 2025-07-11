@@ -1,9 +1,9 @@
 package com.flab.readnshare.domain.follow.service;
 
 import com.flab.readnshare.domain.follow.domain.Follow;
+import com.flab.readnshare.domain.follow.exception.DuplicateFollowException;
 import com.flab.readnshare.domain.follow.repository.FollowRepository;
 import com.flab.readnshare.domain.member.domain.Member;
-import com.flab.readnshare.global.common.exception.FollowException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
@@ -27,7 +27,7 @@ public class FollowService {
 
     private void validateDuplicateFollow(Member fromMember, Member toMember) {
         followRepository.findByFromMemberAndToMember(fromMember, toMember).ifPresent(f -> {
-            throw new FollowException.DuplicateFollowException();
+            throw new DuplicateFollowException();
         });
     }
 

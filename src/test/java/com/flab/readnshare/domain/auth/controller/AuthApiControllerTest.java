@@ -2,15 +2,15 @@ package com.flab.readnshare.domain.auth.controller;
 
 import com.flab.readnshare.AuthTestFixture;
 import com.flab.readnshare.domain.auth.dto.SignInRequestDto;
+import com.flab.readnshare.domain.auth.exception.InvalidPasswordException;
 import com.flab.readnshare.domain.auth.repository.RefreshTokenRepository;
 import com.flab.readnshare.domain.auth.service.AuthService;
 import com.flab.readnshare.domain.member.dto.MemberResponseDto;
+import com.flab.readnshare.domain.member.exception.MemberNotFoundException;
 import com.flab.readnshare.domain.member.service.MemberService;
 import com.flab.readnshare.global.common.advice.ApiExceptionAdvice;
 import com.flab.readnshare.global.common.auth.jwt.JwtCode;
 import com.flab.readnshare.global.common.auth.jwt.JwtUtil;
-import com.flab.readnshare.global.common.exception.AuthException;
-import com.flab.readnshare.global.common.exception.MemberException;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -89,7 +89,7 @@ class AuthApiControllerTest {
         SignInRequestDto request = AuthTestFixture.getSignInRequestDto();
 
         when(authService.signIn(any(SignInRequestDto.class)))
-                .thenThrow(new MemberException.MemberNotFoundException());
+                .thenThrow(new MemberNotFoundException());
 
         // when
         ResultActions resultActions = mockMvc.perform(
@@ -109,7 +109,7 @@ class AuthApiControllerTest {
         SignInRequestDto request = AuthTestFixture.getSignInRequestDto();
 
         when(authService.signIn(any(SignInRequestDto.class)))
-                .thenThrow(new AuthException.InvalidPasswordException());
+                .thenThrow(new InvalidPasswordException());
 
         // when
         ResultActions resultActions = mockMvc.perform(

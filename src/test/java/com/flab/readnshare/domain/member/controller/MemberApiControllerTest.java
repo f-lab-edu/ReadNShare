@@ -2,9 +2,9 @@ package com.flab.readnshare.domain.member.controller;
 
 import com.flab.readnshare.domain.member.dto.MemberResponseDto;
 import com.flab.readnshare.domain.member.dto.SignUpRequestDto;
+import com.flab.readnshare.domain.member.exception.DuplicateEmailException;
 import com.flab.readnshare.domain.member.service.MemberService;
 import com.flab.readnshare.global.common.advice.ApiExceptionAdvice;
-import com.flab.readnshare.global.common.exception.MemberException;
 import com.google.gson.Gson;
 import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.DisplayName;
@@ -84,7 +84,7 @@ class MemberApiControllerTest {
                 .build();
 
         when(memberService.signUp(any(SignUpRequestDto.class)))
-                .thenThrow(new MemberException.DuplicateEmailException());
+                .thenThrow(new DuplicateEmailException());
 
         // when
         ResultActions resultActions = mockMvc.perform(

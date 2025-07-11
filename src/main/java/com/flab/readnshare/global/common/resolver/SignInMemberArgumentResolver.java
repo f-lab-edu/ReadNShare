@@ -1,9 +1,9 @@
 package com.flab.readnshare.global.common.resolver;
 
 import com.flab.readnshare.domain.member.domain.Member;
+import com.flab.readnshare.domain.member.exception.MemberNotFoundException;
 import com.flab.readnshare.domain.member.repository.MemberRepository;
 import com.flab.readnshare.global.common.auth.jwt.JwtUtil;
-import com.flab.readnshare.global.common.exception.MemberException;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.core.MethodParameter;
@@ -32,6 +32,6 @@ public class SignInMemberArgumentResolver implements HandlerMethodArgumentResolv
         Long memberId = Long.valueOf(jwtUtil.extractMemberId(accessToken));
 
         return memberRepository.findById(memberId)
-                .orElseThrow(MemberException.MemberNotFoundException::new);
+                .orElseThrow(MemberNotFoundException::new);
     }
 }

@@ -2,10 +2,10 @@ package com.flab.readnshare.domain.follow.facade;
 
 import com.flab.readnshare.domain.follow.domain.Follow;
 import com.flab.readnshare.domain.follow.event.FollowEvent;
+import com.flab.readnshare.domain.follow.exception.SelfFollowException;
 import com.flab.readnshare.domain.follow.service.FollowService;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.member.service.MemberService;
-import com.flab.readnshare.global.common.exception.FollowException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.ApplicationEventPublisher;
 import org.springframework.stereotype.Service;
@@ -24,7 +24,7 @@ public class FollowFacade {
         Member toMember = memberService.findByEmail(memberEmail);
 
         if (fromMember == toMember) {
-            throw new FollowException.SelfFollowException();
+            throw new SelfFollowException();
         }
 
         Follow follow = followService.save(fromMember, toMember);

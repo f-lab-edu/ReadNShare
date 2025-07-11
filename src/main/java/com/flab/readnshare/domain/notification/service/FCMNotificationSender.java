@@ -1,7 +1,7 @@
 package com.flab.readnshare.domain.notification.service;
 
 import com.flab.readnshare.domain.notification.domain.NotificationContent;
-import com.flab.readnshare.global.common.exception.NotificationException;
+import com.flab.readnshare.domain.notification.exception.InvalidFCMTokenException;
 import com.google.api.core.ApiFuture;
 import com.google.api.core.ApiFutureCallback;
 import com.google.api.core.ApiFutures;
@@ -27,7 +27,7 @@ public class FCMNotificationSender<T extends NotificationContent> implements Not
         String token = fcmService.getFCMToken(receiverId);
 
         if (!(StringUtils.hasText(token))) {
-            throw new NotificationException.InvalidFCMTokenException(receiverId);
+            throw new InvalidFCMTokenException(receiverId);
         }
 
         Message message = Message

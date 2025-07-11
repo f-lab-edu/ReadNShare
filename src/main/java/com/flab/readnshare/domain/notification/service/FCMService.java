@@ -2,8 +2,8 @@ package com.flab.readnshare.domain.notification.service;
 
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.notification.domain.FCMToken;
+import com.flab.readnshare.domain.notification.exception.FCMTokenNotFoundException;
 import com.flab.readnshare.domain.notification.repository.FCMTokenRepository;
-import com.flab.readnshare.global.common.exception.NotificationException;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -26,7 +26,7 @@ public class FCMService {
 
     public String getFCMToken(Long memberId) {
         return fcmTokenRepository.findById(memberId)
-                .orElseThrow(() -> new NotificationException.FCMTokenNotFoundException(memberId))
+                .orElseThrow(() -> new FCMTokenNotFoundException(memberId))
                 .getFcmTokenValue();
     }
 
