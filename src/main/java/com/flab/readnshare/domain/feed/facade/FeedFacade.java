@@ -14,7 +14,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -43,27 +42,36 @@ public class FeedFacade {
 
     public List<FeedResponseDto> getFeed(Long memberId, Long lastReviewId, int limit) {
         String userFeedKey = String.format(KEY, memberId);
+        Set<Object> feedSet = fetchFeedFromRedis(userFeedKey, lastReviewId, limit);
 
-        Set<Object> feedSet;
-        if (lastReviewId == null) {
-            feedSet = feedRedisTemplate.opsForZSet().reverseRange(userFeedKey, 0, (limit - 1));
-        } else {
-            Double score = feedRedisTemplate.opsForZSet().score(userFeedKey, String.valueOf(lastReviewId));
-
-            if (score == null) {
-                return Collections.emptyList();
-            }
-
-            // 마지막 리뷰의 score 이전 데이터들을 역순으로 limit 만큼 조회
-            feedSet = feedRedisTemplate.opsForZSet().reverseRangeByScore(userFeedKey, Double.MIN_VALUE, (score - 1), 0, limit);
+        if (feedSet == null || feedSet.isEmpty()) {
+            return Collections.emptyList();
         }
 
+        return extractFeedResponses(feedSet);
+    }
+
+    private Set<Object> fetchFeedFromRedis(String userFeedKey, Long lastReviewId, int limit) {
+        if (lastReviewId == null) {
+            return feedRedisTemplate.opsForZSet().reverseRange(userFeedKey, 0, (limit - 1));
+        }
+
+        Double score = feedRedisTemplate.opsForZSet().score(userFeedKey, String.valueOf(lastReviewId));
+        if (score == null) {
+            return Collections.emptySet();
+        }
+
+        // 마지막 리뷰의 score 이전 데이터들을 역순으로 limit 만큼 조회
+        return feedRedisTemplate.opsForZSet().reverseRangeByScore(userFeedKey, Double.MIN_VALUE, (score - 1), 0, limit);
+    }
+
+    private List<FeedResponseDto> extractFeedResponses(Set<Object> feedSet) {
         // 리뷰 ID 리스트 추출
         List<Long> reviewIds = Optional.ofNullable(feedSet)
                 .orElse(Collections.emptySet())
                 .stream()
                 .map(reviewId -> Long.parseLong((String) reviewId))
-                .collect(Collectors.toList());
+                .toList();
 
         // 리뷰 ID 리스트를 IN 절로 사용하여 리뷰들을 한 번에 조회
         List<Review> reviews = reviewService.findByIdIn(reviewIds);
@@ -75,6 +83,6 @@ public class FeedFacade {
                         .content(review.getContent())
                         .bookTitle(review.getBook().getTitle())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
     }
 }
