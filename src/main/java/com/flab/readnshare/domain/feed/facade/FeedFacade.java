@@ -9,11 +9,10 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
+import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -66,17 +65,16 @@ public class FeedFacade {
     }
 
     private List<FeedResponseDto> extractFeedResponses(Set<Object> feedSet) {
-        // 리뷰 ID 리스트 추출
-        List<Long> reviewIds = Optional.ofNullable(feedSet)
-                .orElse(Collections.emptySet())
-                .stream()
-                .map(reviewId -> Long.parseLong((String) reviewId))
+        List<Long> reviewIds = feedSet.stream()
+                .map(id -> Long.parseLong((String) id))
                 .toList();
 
-        // 리뷰 ID 리스트를 IN 절로 사용하여 리뷰들을 한 번에 조회
-        List<Review> reviews = reviewService.findByIdIn(reviewIds);
+        Map<Long, Review> reviewMap = reviewService.findByIdIn(reviewIds).stream()
+                .collect(Collectors.toMap(Review::getId, Function.identity()));
 
-        return reviews.stream()
+        return reviewIds.stream()
+                .map(reviewMap::get)
+                .filter(Objects::nonNull)
                 .map(review -> FeedResponseDto.builder()
                         .reviewId(review.getId())
                         .nickName(review.getMember().getNickName())
