@@ -22,9 +22,10 @@ public class FeedFacade {
 
     private static final String KEY = "user:%d:feed";
     private static final long FEED_EXPIRE_DURATION = 7;
+    private static final int MAX_FEED_SIZE = 1000;
 
     public void addToFeed(List<Long> followerIds, Review review) {
-        Long timestamp = System.currentTimeMillis();
+        long timestamp = System.currentTimeMillis();
         Long reviewId = review.getId();
 
         feedRedisTemplate.executePipelined((RedisCallback<Object>) connection -> {
@@ -32,6 +33,7 @@ public class FeedFacade {
                 String userFeedKey = String.format(KEY, followerId);
                 BoundZSetOperations<String, Object> operations = feedRedisTemplate.boundZSetOps(userFeedKey);
                 operations.add(String.valueOf(reviewId), timestamp);
+                operations.removeRange(0, -(MAX_FEED_SIZE + 1));
                 operations.expire(FEED_EXPIRE_DURATION, TimeUnit.DAYS);
             }
 
