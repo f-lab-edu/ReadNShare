@@ -1,6 +1,7 @@
 package com.flab.readnshare;
 
 import com.flab.readnshare.domain.book.domain.Book;
+import com.flab.readnshare.domain.feed.dto.FeedResponseDto;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.review.domain.Review;
 
@@ -34,5 +35,12 @@ public class FeedTestFixture {
                 .book(Book.builder().title("test").build())
                 .member(Member.builder().nickName("testNickName").build())
                 .build();
+    }
+
+    public static List<FeedResponseDto> getFeedResponses() {
+        return Arrays.asList(
+                FeedResponseDto.of(1L, "user1", "content1", "book1"),
+                FeedResponseDto.of(2L, "user1", "content2", "book2")
+        );
     }
 }
