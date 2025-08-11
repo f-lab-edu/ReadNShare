@@ -4,11 +4,7 @@ import com.flab.readnshare.domain.book.domain.Book;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.review.domain.Review;
 
-import java.util.Arrays;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-import java.util.stream.Collectors;
+import java.util.*;
 
 public class FeedTestFixture {
     public static List<Long> getFollowerTestIds() {
@@ -16,23 +12,25 @@ public class FeedTestFixture {
     }
 
     public static Set<Object> getFeedSet() {
-        Set<Object> mockFeedSet = new HashSet<>();
-        mockFeedSet.add("1");
-        mockFeedSet.add("2");
-
-        return mockFeedSet;
+        return new LinkedHashSet<>(Arrays.asList("2", "1"));
     }
 
     public static List<Review> getReviews(Set<Object> feedSet) {
         return feedSet.stream()
                 .map(reviewId -> getReview(Long.parseLong((String) reviewId)))
-                .collect(Collectors.toList());
+                .toList();
+    }
+
+    public static List<Long> getReviewIds(Set<Object> feedSet) {
+        return feedSet.stream()
+                .map(id -> Long.parseLong((String) id))
+                .toList();
     }
 
     private static Review getReview(long id) {
         return Review.builder()
                 .id(id)
-                .content("Content " + id)
+                .content("content" + id)
                 .book(Book.builder().title("test").build())
                 .member(Member.builder().nickName("testNickName").build())
                 .build();
