@@ -2,9 +2,7 @@ package com.flab.readnshare.domain.feed.facade;
 
 import com.flab.readnshare.FeedTestFixture;
 import com.flab.readnshare.ReviewTestFixture;
-import com.flab.readnshare.domain.book.domain.Book;
 import com.flab.readnshare.domain.feed.dto.FeedResponseDto;
-import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.review.domain.Review;
 import com.flab.readnshare.domain.review.service.ReviewService;
 import org.junit.jupiter.api.DisplayName;
@@ -15,10 +13,11 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.data.redis.core.*;
 
+import java.util.Collections;
 import java.util.List;
 import java.util.Set;
-import java.util.stream.Collectors;
 
+import static org.assertj.core.api.Assertions.assertThat;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.*;
@@ -42,99 +41,113 @@ class FeedFacadeTest {
         Review review = ReviewTestFixture.getReviewEntity();
 
         // when
-        when(redisTemplate.executePipelined(any(RedisCallback.class))).thenReturn(null);
-
         feedFacade.addToFeed(followerIds, review);
 
+        // then
         verify(redisTemplate, times(1)).executePipelined(any(RedisCallback.class));
     }
 
+    @DisplayName("lastReviewId가 없을 때(첫 페이지 로딩) 피드를 성공적으로 조회한다.")
     @Test
-    @DisplayName("피드를 최신 리뷰부터 조회한다.")
-    void get_feed_latest_review() {
+    void get_feed_initial_load_success() {
         // given
         Long memberId = 1L;
-        int limit = 10;
+        int limit = 5;
         String userFeedKey = String.format("user:%d:feed", memberId);
         Set<Object> feedSet = FeedTestFixture.getFeedSet();
 
         when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
+        when(zSetOperations.reverseRange(anyString(), anyLong(), anyLong())).thenReturn(feedSet);
 
-        when(zSetOperations.reverseRange(anyString(), anyLong(), anyLong()))
+        List<Review> reviews = FeedTestFixture.getReviews(feedSet);
+        List<Long> reviewIds = FeedTestFixture.getReviewIds(feedSet);
+        when(reviewService.findByIdIn(reviewIds)).thenReturn(reviews);
+
+        // when
+        List<FeedResponseDto> result = feedFacade.getFeed(memberId, null, limit);
+
+        // then
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting("reviewId").containsExactly(2L, 1L);
+        assertThat(result).extracting("content").containsExactly("content2", "content1");
+
+        verify(zSetOperations).reverseRange(userFeedKey, 0, (limit - 1));
+        verify(reviewService).findByIdIn(reviewIds);
+    }
+
+    @DisplayName("lastReviewId가 있을 때 다음 피드를 성공적으로 조회한다.")
+    @Test
+    void get_feed_next_load_success() {
+        // given
+        Long memberId = 1L;
+        Long lastReviewId = 5L;
+        int limit = 5;
+        String userFeedKey = String.format("user:%d:feed", memberId);
+        double lastReviewScore = 10.0;
+
+        Set<Object> feedSet = FeedTestFixture.getFeedSet();
+
+        when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
+        when(zSetOperations.score(userFeedKey, String.valueOf(lastReviewId))).thenReturn(lastReviewScore);
+        when(zSetOperations.reverseRangeByScore(userFeedKey, Double.MIN_VALUE, (lastReviewScore - 1), 0, limit))
                 .thenReturn(feedSet);
 
         List<Review> reviews = FeedTestFixture.getReviews(feedSet);
-        List<Long> reviewIds = reviews.stream().map(Review::getId).collect(Collectors.toList());
-
+        List<Long> reviewIds = FeedTestFixture.getReviewIds(feedSet);
         when(reviewService.findByIdIn(reviewIds)).thenReturn(reviews);
 
         // when
-        List<FeedResponseDto> feed = feedFacade.getFeed(memberId, null, limit);
+        List<FeedResponseDto> result = feedFacade.getFeed(memberId, lastReviewId, limit);
 
         // then
-        verify(zSetOperations).reverseRange(eq(userFeedKey), eq(0L), eq((long) limit - 1));
-        verify(reviewService, times(1)).findByIdIn(anyList());
+        assertThat(result).hasSize(2);
+        assertThat(result).extracting("reviewId").containsExactly(2L, 1L);
+        assertThat(result).extracting("content").containsExactly("content2", "content1");
 
-        assertEquals(feedSet.size(), feed.size());
-        for (Review review : reviews) {
-            FeedResponseDto dto = feed.stream()
-                    .filter(f -> f.getReviewId().equals(review.getId()))
-                    .findFirst()
-                    .orElseThrow(() -> new AssertionError("Review not found in feed"));
-
-            assertEquals(review.getId(), dto.getReviewId());
-            assertEquals(review.getContent(), dto.getContent());
-        }
+        verify(zSetOperations).score(userFeedKey, String.valueOf(lastReviewId));
+        verify(zSetOperations).reverseRangeByScore(userFeedKey, Double.MIN_VALUE, (lastReviewScore - 1), 0, limit);
+        verify(reviewService).findByIdIn(reviewIds);
     }
 
+    @DisplayName("Redis에서 조회된 피드가 없을 경우 빈 리스트를 반환한다.")
     @Test
-    @DisplayName("피드를 마지막 리뷰 다음부터 조회한다.")
-    void get_feed_next_review() {
+    void get_feed_when_redis_returns_empty_should_return_empty_list() {
         // given
         Long memberId = 1L;
-        Long lastReviewId = 10L;
         int limit = 5;
         String userFeedKey = String.format("user:%d:feed", memberId);
-        Double lastReviewScore = 10.0;
-        Set<Object> feedSet = FeedTestFixture.getFeedSet();
 
         when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
-        when(zSetOperations.score(anyString(), eq(String.valueOf(lastReviewId)))).thenReturn(lastReviewScore);
-        when(zSetOperations.reverseRangeByScore(anyString(), anyDouble(), anyDouble(), anyLong(), anyLong())).thenReturn(feedSet);
-
-        Review review1 = createMockReview(1L, "좋은 리뷰입니다!", "이순신", "다른 책 제목");
-        Review review2 = createMockReview(2L, "또 다른 리뷰!", "박지성", "다른 책 제목 2");
-
-        List<Review> reviews = List.of(review1, review2);
-        List<Long> reviewIds = reviews.stream().map(Review::getId).collect(Collectors.toList());
-
-        when(reviewService.findByIdIn(reviewIds)).thenReturn(reviews);
+        when(zSetOperations.reverseRange(userFeedKey, 0, (limit - 1))).thenReturn(Collections.emptySet());
 
         // when
-        List<FeedResponseDto> feed = feedFacade.getFeed(memberId, lastReviewId, limit);
+        List<FeedResponseDto> result = feedFacade.getFeed(memberId, null, limit);
 
         // then
-        verify(zSetOperations).reverseRangeByScore(eq(userFeedKey), eq(Double.MIN_VALUE), eq(lastReviewScore - 1), eq(0L), eq((long) limit));
-        verify(reviewService).findByIdIn(eq(reviewIds));
-
-        assertEquals(reviews.size(), feed.size());
-
-        for (Review review : reviews) {
-            FeedResponseDto dto = feed.stream().filter(f -> f.getReviewId().equals(review.getId())).findFirst().orElse(null);
-            assertNotNull(dto);
-            assertEquals(review.getId(), dto.getReviewId());
-            assertEquals(review.getMember().getNickName(), dto.getNickName());
-            assertEquals(review.getContent(), dto.getContent());
-            assertEquals(review.getBook().getTitle(), dto.getBookTitle());
-        }
+        assertThat(result).isEmpty();
+        verify(reviewService, never()).findByIdIn(anyList());
     }
 
-    private Review createMockReview(Long id, String content, String nickName, String bookTitle) {
-        return Review.builder()
-                .id(id)
-                .content(content)
-                .member(Member.builder().nickName(nickName).build())
-                .book(Book.builder().title(bookTitle).build())
-                .build();
+    @DisplayName("score 조회가 실패하면 빈 리스트를 반환한다")
+    @Test
+    void get_feed_when_score_null_should_return_empty_list() {
+        // given
+        Long memberId = 1L;
+        Long lastReviewId = 5L;
+        int limit = 5;
+        String userFeedKey = String.format("user:%d:feed", memberId);
+
+        when(redisTemplate.opsForZSet()).thenReturn(zSetOperations);
+        when(zSetOperations.score(userFeedKey, String.valueOf(lastReviewId))).thenReturn(null);
+
+        // when
+        List<FeedResponseDto> result = feedFacade.getFeed(memberId, lastReviewId, limit);
+
+        // then
+        assertThat(result).isEmpty();
+
+        verify(zSetOperations, never()).reverseRangeByScore(anyString(), anyDouble(), anyDouble(), anyLong(), anyLong());
+        verify(reviewService, never()).findByIdIn(anyList());
     }
+
 }
