@@ -9,11 +9,9 @@ import org.springframework.data.redis.core.RedisCallback;
 import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.stereotype.Service;
 
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.TimeUnit;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Service
@@ -24,9 +22,10 @@ public class FeedFacade {
 
     private static final String KEY = "user:%d:feed";
     private static final long FEED_EXPIRE_DURATION = 7;
+    private static final int MAX_FEED_SIZE = 1000;
 
     public void addToFeed(List<Long> followerIds, Review review) {
-        Long timestamp = System.currentTimeMillis();
+        long timestamp = System.currentTimeMillis();
         Long reviewId = review.getId();
 
         feedRedisTemplate.executePipelined((RedisCallback<Object>) connection -> {
@@ -34,6 +33,7 @@ public class FeedFacade {
                 String userFeedKey = String.format(KEY, followerId);
                 BoundZSetOperations<String, Object> operations = feedRedisTemplate.boundZSetOps(userFeedKey);
                 operations.add(String.valueOf(reviewId), timestamp);
+                operations.removeRange(0, -(MAX_FEED_SIZE + 1));
                 operations.expire(FEED_EXPIRE_DURATION, TimeUnit.DAYS);
             }
 
@@ -43,38 +43,46 @@ public class FeedFacade {
 
     public List<FeedResponseDto> getFeed(Long memberId, Long lastReviewId, int limit) {
         String userFeedKey = String.format(KEY, memberId);
+        Set<Object> feedSet = fetchFeedFromRedis(userFeedKey, lastReviewId, limit);
 
-        Set<Object> feedSet;
-        if (lastReviewId == null) {
-            feedSet = feedRedisTemplate.opsForZSet().reverseRange(userFeedKey, 0, (limit - 1));
-        } else {
-            Double score = feedRedisTemplate.opsForZSet().score(userFeedKey, String.valueOf(lastReviewId));
-
-            if (score == null) {
-                return Collections.emptyList();
-            }
-
-            // 마지막 리뷰의 score 이전 데이터들을 역순으로 limit 만큼 조회
-            feedSet = feedRedisTemplate.opsForZSet().reverseRangeByScore(userFeedKey, Double.MIN_VALUE, (score - 1), 0, limit);
+        if (feedSet == null || feedSet.isEmpty()) {
+            return Collections.emptyList();
         }
 
-        // 리뷰 ID 리스트 추출
-        List<Long> reviewIds = Optional.ofNullable(feedSet)
-                .orElse(Collections.emptySet())
-                .stream()
-                .map(reviewId -> Long.parseLong((String) reviewId))
-                .collect(Collectors.toList());
+        return extractFeedResponses(feedSet);
+    }
 
-        // 리뷰 ID 리스트를 IN 절로 사용하여 리뷰들을 한 번에 조회
-        List<Review> reviews = reviewService.findByIdIn(reviewIds);
+    private Set<Object> fetchFeedFromRedis(String userFeedKey, Long lastReviewId, int limit) {
+        if (lastReviewId == null) {
+            return feedRedisTemplate.opsForZSet().reverseRange(userFeedKey, 0, (limit - 1));
+        }
 
-        return reviews.stream()
+        Double score = feedRedisTemplate.opsForZSet().score(userFeedKey, String.valueOf(lastReviewId));
+        if (score == null) {
+            return Collections.emptySet();
+        }
+
+        // 마지막 리뷰의 score 이전 데이터들을 역순으로 limit 만큼 조회
+        return feedRedisTemplate.opsForZSet().reverseRangeByScore(userFeedKey, Double.MIN_VALUE, (score - 1), 0, limit);
+    }
+
+    private List<FeedResponseDto> extractFeedResponses(Set<Object> feedSet) {
+        List<Long> reviewIds = feedSet.stream()
+                .map(id -> Long.parseLong((String) id))
+                .toList();
+
+        Map<Long, Review> reviewMap = reviewService.findByIdIn(reviewIds).stream()
+                .collect(Collectors.toMap(Review::getId, Function.identity()));
+
+        return reviewIds.stream()
+                .map(reviewMap::get)
+                .filter(Objects::nonNull)
                 .map(review -> FeedResponseDto.builder()
                         .reviewId(review.getId())
                         .nickName(review.getMember().getNickName())
                         .content(review.getContent())
                         .bookTitle(review.getBook().getTitle())
                         .build())
-                .collect(Collectors.toList());
+                .toList();
     }
 }

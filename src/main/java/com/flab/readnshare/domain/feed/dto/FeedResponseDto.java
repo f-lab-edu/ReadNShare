@@ -20,4 +20,13 @@ public class FeedResponseDto {
         this.content = content;
         this.bookTitle = bookTitle;
     }
+
+    public static FeedResponseDto of(Long reviewId, String nickName, String content, String bookTitle){
+        FeedResponseDto response = new FeedResponseDto();
+        response.reviewId = reviewId;
+        response.nickName = nickName;
+        response.content = content;
+        response.bookTitle = bookTitle;
+        return response;
+    }
 }
