@@ -48,8 +48,8 @@ jobs:
           host: ${{ secrets.SERVER_HOST }}
           key: ${{ secrets.SERVER_PRIVATE_KEY }}
           port: ${{ secrets.SERVER_PORT }}
-          script_stop: true
           script: |
+            set -e
             cd /home/compose
             docker-compose pull
             docker-compose up -d --no-deps
