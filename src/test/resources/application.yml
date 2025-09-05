@@ -10,3 +10,20 @@ spring:
 logging:
   level:
     org.hibernate.SQL: debug
+
+jwt:
+  access:
+    expiration: 1800000 #30분
+  refresh:
+    expiration: 1209600000 #2주
+  security:
+    secretKey: my-custom-secret-key-that-is-very-long
+
+naver:
+  book:
+    id: ${NAVER_BOOK_ID:none}
+    secret: ${NAVER_BOOK_SECRET:none}
+
+firebase:
+  service:
+    key: firebase/readnshare-firebase-adminsdk.json
