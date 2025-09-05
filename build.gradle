@@ -39,25 +39,30 @@ dependencies {
     // FCM
     implementation 'com.google.firebase:firebase-admin:9.2.0'
 
-    // test
-    testImplementation('com.google.code.gson:gson:2.10.1')
-
     // monitoring
     implementation 'org.springframework.boot:spring-boot-starter-actuator'
     implementation 'io.micrometer:micrometer-registry-prometheus'
 
-    compileOnly 'org.projectlombok:lombok'
-    runtimeOnly 'com.h2database:h2'
-    runtimeOnly 'com.mysql:mysql-connector-j'
-    annotationProcessor 'org.projectlombok:lombok'
-    testImplementation 'org.springframework.boot:spring-boot-starter-test'
-
+    // retry
     implementation 'org.springframework.retry:spring-retry'
     implementation 'org.springframework:spring-aspects'
+
+    // lombok
+    compileOnly 'org.projectlombok:lombok'
+    annotationProcessor 'org.projectlombok:lombok'
+
+    runtimeOnly 'com.h2database:h2'
+    runtimeOnly 'com.mysql:mysql-connector-j'
+
+    // test
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation('com.google.code.gson:gson:2.10.1')
+    implementation platform('org.testcontainers:testcontainers-bom:1.21.3') //import bom
+    testImplementation('org.testcontainers:mysql') //no version specified
+    testImplementation('org.testcontainers:junit-jupiter')
     testFixturesImplementation('com.github.javafaker:javafaker:1.0.2') { exclude module: 'snakeyaml' }
     testFixturesImplementation group: 'org.yaml', name: 'snakeyaml', version: '2.2'
 }
-
 tasks.named('test') {
     useJUnitPlatform()
     finalizedBy jacocoTestReport // report is always generated after tests run
