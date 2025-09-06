@@ -17,7 +17,7 @@ public class ReviewLikeCount extends BaseTimeEntity {
     @Column(name = "review_like_count_id")
     private Long id;
 
-    @ManyToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "review_id")
     private Review review;
 
