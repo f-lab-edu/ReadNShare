@@ -29,10 +29,10 @@ public class ReviewLikeCount extends BaseTimeEntity {
         this.count = count;
     }
 
-    public static ReviewLikeCount create(Review review) {
+    public static ReviewLikeCount create(Review review, Long count) {
         return ReviewLikeCount.builder()
                 .review(review)
-                .count(0L)
+                .count(count)
                 .build();
     }
 

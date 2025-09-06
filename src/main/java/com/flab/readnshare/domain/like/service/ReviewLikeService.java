@@ -1,6 +1,8 @@
 package com.flab.readnshare.domain.like.service;
 
 import com.flab.readnshare.domain.like.domain.ReviewLike;
+import com.flab.readnshare.domain.like.domain.ReviewLikeCount;
+import com.flab.readnshare.domain.like.repository.ReviewLikeCountRepository;
 import com.flab.readnshare.domain.like.repository.ReviewLikeRepository;
 import com.flab.readnshare.domain.member.domain.Member;
 import com.flab.readnshare.domain.member.exception.MemberNotFoundException;
@@ -19,6 +21,13 @@ public class ReviewLikeService {
     private final ReviewLikeRepository reviewLikeRepository;
     private final ReviewRepository reviewRepository;
     private final MemberRepository memberRepository;
+    private final ReviewLikeCountRepository reviewLikeCountRepository;
+
+    public Long count(Long reviewId) {
+        return reviewLikeCountRepository.findById(reviewId)
+                .map(ReviewLikeCount::getCount)
+                .orElse(0L);
+    }
 
     @Transactional
     public void like(Long reviewId, Long memberId) {
@@ -28,11 +37,19 @@ public class ReviewLikeService {
         reviewLikeRepository.save(
                 ReviewLike.create(review, member)
         );
+
+        int result = reviewLikeCountRepository.increase(reviewId);
+        if (result == 0) {
+            reviewLikeCountRepository.save(ReviewLikeCount.create(review, 1L));
+        }
     }
 
     @Transactional
     public void unlike(Long reviewId, Long memberId) {
         reviewLikeRepository.findByReviewIdAndMemberId(reviewId, memberId)
-                .ifPresent(reviewLikeRepository::delete);
+                .ifPresent(entity -> {
+                    reviewLikeRepository.delete(entity);
+                    reviewLikeCountRepository.decrease(reviewId);
+                });
     }
 }
