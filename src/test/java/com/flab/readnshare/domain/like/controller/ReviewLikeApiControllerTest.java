@@ -45,7 +45,7 @@ class ReviewLikeApiControllerTest {
     @Test
     void like_success() throws Exception {
         // when & then
-        mockMvc.perform(post("/api/review-like/review/1/member/1")
+        mockMvc.perform(post("/api/review-likes/reviews/1/members/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isCreated());
@@ -57,7 +57,7 @@ class ReviewLikeApiControllerTest {
     @Test
     void unlike_success() throws Exception {
         // when & then
-        mockMvc.perform(delete("/api/review-like/review/1/member/1")
+        mockMvc.perform(delete("/api/review-likes/reviews/1/members/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isOk());
@@ -73,7 +73,7 @@ class ReviewLikeApiControllerTest {
                 .when(reviewLikeService).like(anyLong(), anyLong());
 
         // when & then
-        mockMvc.perform(post("/api/review-like/review/1/member/1")
+        mockMvc.perform(post("/api/review-likes/reviews/1/members/1")
                         .contentType(MediaType.APPLICATION_JSON))
                 .andDo(print())
                 .andExpect(status().isInternalServerError())
