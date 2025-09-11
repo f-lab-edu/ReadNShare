@@ -5,25 +5,25 @@ import org.springframework.test.context.DynamicPropertyRegistry;
 import org.springframework.test.context.DynamicPropertySource;
 import org.testcontainers.containers.GenericContainer;
 import org.testcontainers.containers.MySQLContainer;
-import org.testcontainers.junit.jupiter.Container;
-import org.testcontainers.junit.jupiter.Testcontainers;
 import org.testcontainers.utility.DockerImageName;
 
-@Testcontainers
 @SpringBootTest
 public abstract class IntegrationTestSupport {
     private static final String MYSQL_IMAGE = "mysql:8.0";
     private static final String REDIS_IMAGE = "redis:6-alpine";
 
-    @Container
     private static final MySQLContainer<?> mysqlContainer = new MySQLContainer<>(MYSQL_IMAGE)
             .withDatabaseName("testdb")
             .withUsername("test")
             .withPassword("test");
 
-    @Container
     private static final GenericContainer<?> redisContainer = new GenericContainer<>(DockerImageName.parse(REDIS_IMAGE))
             .withExposedPorts(6379);
+
+    static {
+        mysqlContainer.start();
+        redisContainer.start();
+    }
 
     @DynamicPropertySource
     public static void setProperties(DynamicPropertyRegistry registry) {
