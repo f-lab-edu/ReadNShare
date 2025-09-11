@@ -35,12 +35,4 @@ public class ReviewLikeCount extends BaseTimeEntity {
                 .count(count)
                 .build();
     }
-
-    public void increase() {
-        this.count++;
-    }
-
-    public void decrease() {
-        this.count--;
-    }
 }
